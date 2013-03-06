@@ -97,5 +97,11 @@ class RedisAPITestCase(unittest.TestCase):
         }
         self.assertEqual(want, j)
 
+    def test_unbind_does_nothing(self):
+        import redisapi
+        content, code = redisapi.unbind("instance", "10.10.10.10")
+        self.assertEqual(200, code)
+        self.assertEqual("", content)
+
 if __name__ == "__main__":
     unittest.main()

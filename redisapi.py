@@ -38,6 +38,11 @@ def bind(name):
     return json.dumps(result), 201
 
 
+@app.route("/resources/<name>/hostname/<host>", methods=["DELETE"])
+def unbind(name, host):
+    return "", 200
+
+
 @app.route("/resources", methods=["POST"])
 def add_instance():
     return "", 201
