@@ -1,0 +1,14 @@
+language: python
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install `cat requirements.apt` -qqy
+install:
+  - pip install -qr requirements.txt
+script:
+  - python test.py
+notifications:
+  irc:
+    channels:
+      - "irc.freenode.net#tsuru"
+    on_success: change
+    on_failure: always
