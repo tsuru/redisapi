@@ -3,9 +3,10 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install `cat requirements.apt` -qqy
 install:
-  - pip install -qr requirements.txt
+  - pip install -qr test_requirements.txt
 script:
   - python test.py
+  - flake8 .
 notifications:
   irc:
     channels:
