@@ -16,7 +16,7 @@ three environment variable:
 * **REDIS_SERVER_PORT**: port used to connect to the Redis server. _Default
   value:_ 6379.
 * **REDIS_SERVER_PASSWORD**: password used to connect to the Redis server.
-  Default value: none. When undefined, access will be unauthenticated. For more
+  _Default value:_ none. When undefined, access will be unauthenticated. For more
   details, check "Authentication feature" at <http://redis.io/topics/security>.
 * **REDIS_PUBLIC_HOST**: the public hosts that apps will use to the connect to
   the redis server. This may be useful in the case where you have a public and
