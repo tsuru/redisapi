@@ -13,6 +13,11 @@ app = flask.Flask(__name__)
 def add_instance():
     return "", 201
 
+
+@app.route("/resources/<name>", methods=["DELETE"])
+def remove_instance(name):
+    return "", 200
+
 try:
     os.environ["REDIS_SERVER_HOST"]
 except KeyError:

@@ -32,5 +32,11 @@ class RedisAPITestCase(unittest.TestCase):
         response = app.post("/resources")
         self.assertEqual(201, response.status_code)
 
+    def test_remove_instance_does_nothing(self):
+        import redisapi
+        app = redisapi.app.test_client()
+        response = app.delete("/resources/myinstance")
+        self.assertEqual(200, response.status_code)
+
 if __name__ == "__main__":
     unittest.main()
