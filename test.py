@@ -19,12 +19,18 @@ class RedisAPITestCase(unittest.TestCase):
         del os.environ["REDIS_SERVER_HOST"]
         with self.assertRaises(Exception) as cm:
             import redisapi
+            reload(redisapi)
         exc = cm.exception
         self.assertEqual(
             (u"You must define the REDIS_SERVER_HOST environment variable.",),
             exc.args,
         )
 
+    def test_add_instance_does_nothing(self):
+        import redisapi
+        app = redisapi.app.test_client()
+        response = app.post("/resources")
+        self.assertEqual(201, response.status_code)
 
 if __name__ == "__main__":
     unittest.main()

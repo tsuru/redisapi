@@ -4,6 +4,15 @@
 
 import os
 
+import flask
+
+app = flask.Flask(__name__)
+
+
+@app.route("/resources", methods=["POST"])
+def add_instance():
+    return "", 201
+
 try:
     os.environ["REDIS_SERVER_HOST"]
 except KeyError:
