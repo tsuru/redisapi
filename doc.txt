@@ -1,0 +1,11 @@
+redisapi
+
+This service is used for Redis connections.
+
+Once binded, you will be able to use the following environment variables:
+
+    - REDIS_HOST: the host that you should use in your Redis client.
+    - REDIS_PORT: the port that you should use in your Redis client.
+    - REDIS_PASSWORD: the password that you should use in your Redis client.
+      This environment variable may be undefined, which means that
+      authorization is not enabled in the server.
