@@ -6,6 +6,7 @@ import json
 import os
 
 import flask
+import redis
 
 app = flask.Flask(__name__)
 
@@ -52,3 +53,9 @@ def add_instance():
 def remove_instance(name):
     return "", 200
 
+
+@app.route("/resources/<name>/status", methods=["GET"])
+def status(name):
+    conn = redis.Connection(host=server)
+    conn.connect()
+    return "", 204

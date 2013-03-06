@@ -6,6 +6,15 @@ import json
 import os
 import unittest
 
+import mock
+
+
+class FakeConnection(object):
+    connected = False
+
+    def connect(self):
+        self.connected = True
+
 
 class RedisAPITestCase(unittest.TestCase):
 
@@ -102,6 +111,17 @@ class RedisAPITestCase(unittest.TestCase):
         content, code = redisapi.unbind("instance", "10.10.10.10")
         self.assertEqual(200, code)
         self.assertEqual("", content)
+
+    @mock.patch("redis.Connection")
+    def test_status(self, Connection):
+        f = FakeConnection()
+        Connection.return_value = f
+        import redisapi
+        content, code = redisapi.status("myinstance")
+        self.assertEqual(204, code)
+        self.assertEqual("", content)
+        Connection.assert_called_with(host="localhost")
+        self.assertTrue(f.connected)
 
 if __name__ == "__main__":
     unittest.main()
