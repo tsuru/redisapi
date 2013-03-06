@@ -7,6 +7,7 @@ import os
 import unittest
 
 import mock
+from redis import exceptions
 
 
 class FakeConnection(object):
@@ -14,6 +15,14 @@ class FakeConnection(object):
 
     def connect(self):
         self.connected = True
+
+
+class FailingFakeConnection(object):
+
+    def connect(self):
+        raise exceptions.ConnectionError(
+            "Error 61 connecting localhost:6379. Connection refused.",
+        )
 
 
 class RedisAPITestCase(unittest.TestCase):
@@ -122,6 +131,27 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual("", content)
         Connection.assert_called_with(host="localhost")
         self.assertTrue(f.connected)
+
+    @mock.patch("redis.Connection")
+    def test_status_unavailable_server(self, Connection):
+        f = FailingFakeConnection()
+        Connection.return_value = f
+        import redisapi
+        content, code = redisapi.status("myinstance")
+        self.assertEqual(500, code)
+        want_msg = "Error 61 connecting localhost:6379. Connection refused."
+        self.assertEqual(want_msg, content)
+
+    @mock.patch("redis.Connection")
+    def test_status_with_password(self, Connection):
+        os.environ["REDIS_SERVER_PASSWORD"] = "s3cr3t"
+        self.addCleanup(self.remove_env, "REDIS_SERVER_PASSWORD")
+        f = FakeConnection()
+        Connection.return_value = f
+        import redisapi
+        content, code = redisapi.status("myinstance")
+        self.assertEqual(204, code)
+        Connection.assert_called_with(host="localhost", password="s3cr3t")
 
 if __name__ == "__main__":
     unittest.main()

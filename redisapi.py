@@ -56,6 +56,13 @@ def remove_instance(name):
 
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
-    conn = redis.Connection(host=server)
-    conn.connect()
+    passwd = os.environ.get("REDIS_SERVER_PASSWORD")
+    kw = {"host": server}
+    if passwd:
+        kw["password"] = passwd
+    try:
+        conn = redis.Connection(**kw)
+        conn.connect()
+    except Exception as e:
+        return str(e), 500
     return "", 204
