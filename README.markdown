@@ -7,8 +7,8 @@ PaaS](http://tsuru.io).
 
 ##Installation and configuration
 
-This API is ready for being deployed as a tsuru application. It depends on four
-environment variable:
+This API is ready for being deployed as a tsuru application. It depends on the
+following environment variables:
 
 * **REDIS_SERVER_HOST**: the address of the server to which the API will
   provide access. _Default value:_ ``none``. redis-api will fail to start if
