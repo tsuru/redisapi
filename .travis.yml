@@ -2,11 +2,8 @@ language: python
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install `cat requirements.apt` -qqy
-install:
-  - pip install -qr test_requirements.txt
 script:
-  - py.test .
-  - flake8 .
+  - make test
 notifications:
   irc:
     channels:
