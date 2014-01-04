@@ -5,7 +5,7 @@ before_install:
 install:
   - pip install -qr test_requirements.txt
 script:
-  - python test.py
+  - py.test .
   - flake8 .
 notifications:
   irc:
