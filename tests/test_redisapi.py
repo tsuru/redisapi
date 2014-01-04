@@ -152,6 +152,3 @@ class RedisAPITestCase(unittest.TestCase):
         content, code = redisapi.status("myinstance")
         self.assertEqual(204, code)
         Connection.assert_called_with(host="localhost", password="s3cr3t")
-
-if __name__ == "__main__":
-    unittest.main()
