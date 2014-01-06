@@ -27,9 +27,13 @@ def coalesce(default, *args):
 
 class FakeManager(object):
     instance_added = False
+    binded = False
 
     def add_instance(self):
         self.instance_added = True
+
+    def bind(self):
+        self.binded = True
 
 
 class RedisManager(object):

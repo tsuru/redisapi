@@ -22,3 +22,10 @@ class FakeManagerTest(unittest.TestCase):
         self.assertFalse(manager.instance_added)
         manager.add_instance()
         self.assertTrue(manager.instance_added)
+
+    def test_bind(self):
+        from redisapi import FakeManager
+        manager = FakeManager()
+        self.assertFalse(manager.binded)
+        manager.bind()
+        self.assertTrue(manager.binded)
