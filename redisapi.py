@@ -25,6 +25,13 @@ def coalesce(default, *args):
     return default
 
 
+class FakeManager(object):
+    instance_added = False
+
+    def add_instance(self):
+        self.instance_added = True
+
+
 class RedisManager(object):
     def add_instance(self):
         pass
