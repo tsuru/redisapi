@@ -36,3 +36,10 @@ class FakeManagerTest(unittest.TestCase):
         self.assertFalse(manager.unbinded)
         manager.unbind()
         self.assertTrue(manager.unbinded)
+
+    def test_remove_instance(self):
+        from redisapi import FakeManager
+        manager = FakeManager()
+        self.assertFalse(manager.removed)
+        manager.remove()
+        self.assertTrue(manager.removed)
