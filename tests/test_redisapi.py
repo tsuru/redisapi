@@ -24,6 +24,12 @@ class RedisAPITestCase(unittest.TestCase):
         from redisapi import manager
         self.assertIsInstance(manager(), RedisManager)
 
+    def test_manager_fake_manager(self):
+        os.environ["API_MANAGER"] = "fake"
+        from managers import FakeManager
+        from redisapi import manager
+        self.assertIsInstance(manager(), FakeManager)
+
     def test_add_instance(self):
         response = self.app.post("/resources")
         self.assertEqual(201, response.status_code)
@@ -52,5 +58,5 @@ class RedisAPITestCase(unittest.TestCase):
     def test_status(self):
         import redisapi
         content, code = redisapi.status("myinstance")
-        self.assertEqual(204, code)
-        self.assertEqual("", content)
+        self.assertEqual(500, code)
+        self.assertEqual("error", content)

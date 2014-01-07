@@ -35,7 +35,7 @@ class FakeManagerTest(unittest.TestCase):
 
     def test_remove_instance(self):
         self.assertFalse(self.manager.removed)
-        self.manager.remove()
+        self.manager.remove_instance()
         self.assertTrue(self.manager.removed)
 
     def test_is_ok(self):

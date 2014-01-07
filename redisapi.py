@@ -4,15 +4,17 @@
 
 import json
 import flask
+import os
 
-from managers import RedisManager
+from managers import managers
 
 
 app = flask.Flask(__name__)
 
 
 def manager():
-    return RedisManager()
+    manager_name = os.environ.get("API_MANAGER", "shared")
+    return managers[manager_name]()
 
 
 @app.route("/resources/<name>", methods=["POST"])

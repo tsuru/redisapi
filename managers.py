@@ -38,7 +38,7 @@ class FakeManager(object):
     def unbind(self):
         self.unbinded = True
 
-    def remove(self):
+    def remove_instance(self):
         self.removed = True
 
     def is_ok(self):
@@ -78,3 +78,9 @@ class RedisManager(object):
         except Exception as e:
             return False, str(e)
         return True, ""
+
+
+managers = {
+    'shared': RedisManager,
+    'fake': FakeManager,
+}
