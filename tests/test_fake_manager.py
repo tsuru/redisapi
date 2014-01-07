@@ -15,7 +15,7 @@ class FakeManagerTest(unittest.TestCase):
     def setUp(self):
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
-        from redisapi import FakeManager
+        from managers import FakeManager
         self.manager = FakeManager()
 
     def test_add_instance(self):
