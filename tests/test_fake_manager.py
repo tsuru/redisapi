@@ -15,38 +15,30 @@ class FakeManagerTest(unittest.TestCase):
     def setUp(self):
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
+        from redisapi import FakeManager
+        self.manager = FakeManager()
 
     def test_add_instance(self):
-        from redisapi import FakeManager
-        manager = FakeManager()
-        self.assertFalse(manager.instance_added)
-        manager.add_instance()
-        self.assertTrue(manager.instance_added)
+        self.assertFalse(self.manager.instance_added)
+        self.manager.add_instance()
+        self.assertTrue(self.manager.instance_added)
 
     def test_bind(self):
-        from redisapi import FakeManager
-        manager = FakeManager()
-        self.assertFalse(manager.binded)
-        manager.bind()
-        self.assertTrue(manager.binded)
+        self.assertFalse(self.manager.binded)
+        self.manager.bind()
+        self.assertTrue(self.manager.binded)
 
     def test_unbind(self):
-        from redisapi import FakeManager
-        manager = FakeManager()
-        self.assertFalse(manager.unbinded)
-        manager.unbind()
-        self.assertTrue(manager.unbinded)
+        self.assertFalse(self.manager.unbinded)
+        self.manager.unbind()
+        self.assertTrue(self.manager.unbinded)
 
     def test_remove_instance(self):
-        from redisapi import FakeManager
-        manager = FakeManager()
-        self.assertFalse(manager.removed)
-        manager.remove()
-        self.assertTrue(manager.removed)
+        self.assertFalse(self.manager.removed)
+        self.manager.remove()
+        self.assertTrue(self.manager.removed)
 
     def test_is_ok(self):
-        from redisapi import FakeManager
-        manager = FakeManager()
-        self.assertFalse(manager.is_ok())
-        manager.ok = True
-        self.assertTrue(manager.is_ok())
+        self.assertFalse(self.manager.is_ok())
+        self.manager.ok = True
+        self.assertTrue(self.manager.is_ok())
