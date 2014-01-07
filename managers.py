@@ -4,6 +4,23 @@
 
 import os
 import redis
+import docker
+import io
+
+
+class DockerManager(object):
+    def __init__(self):
+        self.client = docker.Client(
+            base_url='unix://var/run/docker.sock'
+        )
+
+    def add_instance(self):
+        script = io.BytesIO('\n'.join([
+            'FROM base',
+            'RUN mkdir -p /tmp/test',
+            'EXPOSE 8080',
+        ]))
+        self.client.build(fileobj=script)
 
 
 class FakeManager(object):
