@@ -71,7 +71,7 @@ class RedisManager(object):
     def remove_instance(self):
         pass
 
-    def status(self):
+    def is_ok(self):
         passwd = os.environ.get("REDIS_SERVER_PASSWORD")
         kw = {"host": server}
         if passwd:
@@ -115,7 +115,7 @@ def remove_instance(name):
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
     manager = RedisManager()
-    ok, msg = manager.status()
+    ok, msg = manager.is_ok()
     if ok:
         return msg, 204
     return msg, 500
