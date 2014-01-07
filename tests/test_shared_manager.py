@@ -106,8 +106,8 @@ class SharedManagerTest(unittest.TestCase):
     def test_running_without_the_REDIS_SERVER_HOST_variable(self):
         del os.environ["REDIS_SERVER_HOST"]
         with self.assertRaises(Exception) as cm:
-            import managers
-            reload(managers)
+            from managers import RedisManager
+            RedisManager()
         exc = cm.exception
         self.assertEqual(
             (u"You must define the REDIS_SERVER_HOST environment variable.",),

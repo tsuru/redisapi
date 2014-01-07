@@ -6,13 +6,6 @@ import os
 import redis
 
 
-try:
-    server = os.environ["REDIS_SERVER_HOST"]
-except KeyError:
-    msg = u"You must define the REDIS_SERVER_HOST environment variable."
-    raise Exception(msg)
-
-
 class FakeManager(object):
     instance_added = False
     binded = False
@@ -38,11 +31,19 @@ class FakeManager(object):
 
 
 class RedisManager(object):
+    def __init__(self):
+        try:
+            self.server = os.environ["REDIS_SERVER_HOST"]
+        except KeyError:
+            msg = u"You must define the REDIS_SERVER_HOST " \
+                  "environment variable."
+            raise Exception(msg)
+
     def add_instance(self):
         pass
 
     def bind(self):
-        host = os.environ.get("REDIS_PUBLIC_HOST", server)
+        host = os.environ.get("REDIS_PUBLIC_HOST", self.server)
         port = os.environ.get("REDIS_SERVER_PORT", "6379")
         result = {
             "REDIS_HOST": host,
@@ -61,7 +62,7 @@ class RedisManager(object):
 
     def is_ok(self):
         passwd = os.environ.get("REDIS_SERVER_PASSWORD")
-        kw = {"host": server}
+        kw = {"host": self.server}
         if passwd:
             kw["password"] = passwd
         try:

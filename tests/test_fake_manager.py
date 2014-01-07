@@ -3,18 +3,11 @@
 # license that can be found in the LICENSE file.
 
 import unittest
-import os
 
 
 class FakeManagerTest(unittest.TestCase):
 
-    def remove_env(self, env):
-        if env in os.environ:
-            del os.environ[env]
-
     def setUp(self):
-        os.environ["REDIS_SERVER_HOST"] = "localhost"
-        self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         from managers import FakeManager
         self.manager = FakeManager()
 
