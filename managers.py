@@ -13,14 +13,6 @@ except KeyError:
     raise Exception(msg)
 
 
-def coalesce(default, *args):
-    for arg in args:
-        val = os.environ.get(arg)
-        if val:
-            return val
-    return default
-
-
 class FakeManager(object):
     instance_added = False
     binded = False
@@ -50,8 +42,8 @@ class RedisManager(object):
         pass
 
     def bind(self):
-        host = coalesce(server, "REDIS_PUBLIC_HOST")
-        port = coalesce("6379", "REDIS_SERVER_PORT")
+        host = os.environ.get("REDIS_PUBLIC_HOST", server)
+        port = os.environ.get("REDIS_SERVER_PORT", "6379")
         result = {
             "REDIS_HOST": host,
             "REDIS_PORT": port,
