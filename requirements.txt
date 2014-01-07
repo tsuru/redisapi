@@ -3,3 +3,4 @@ Jinja2==2.6
 Werkzeug==0.8.3
 gunicorn==0.17.2
 redis==2.7.2
+docker-py==0.2.3
