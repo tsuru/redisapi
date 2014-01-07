@@ -22,6 +22,18 @@ class DockerManager(object):
         ]))
         self.client.build(fileobj=script)
 
+    def bind(self):
+        pass
+
+    def unbind(self):
+        pass
+
+    def remove_instance(self):
+        pass
+
+    def is_ok(self):
+        pass
+
 
 class FakeManager(object):
     instance_added = False
