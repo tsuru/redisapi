@@ -30,6 +30,7 @@ class FakeManager(object):
     binded = False
     unbinded = False
     removed = False
+    ok = False
 
     def add_instance(self):
         self.instance_added = True
@@ -42,6 +43,9 @@ class FakeManager(object):
 
     def remove(self):
         self.removed = True
+
+    def is_ok(self):
+        return self.ok
 
 
 class RedisManager(object):
