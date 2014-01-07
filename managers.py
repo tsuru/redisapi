@@ -29,7 +29,9 @@ class DockerManager(object):
         pass
 
     def remove_instance(self):
-        pass
+        # TODO: pass container id
+        self.client.stop()
+        self.client.remove_container()
 
     def is_ok(self):
         pass

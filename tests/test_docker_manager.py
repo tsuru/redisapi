@@ -16,3 +16,8 @@ class FakeManagerTest(unittest.TestCase):
     def test_add_instance(self):
         self.manager.add_instance()
         self.manager.client.build.assert_called()
+
+    def test_remove_instance(self):
+        self.manager.remove_instance()
+        self.manager.client.stop.assert_called()
+        self.manager.client.remove_container.assert_called()
