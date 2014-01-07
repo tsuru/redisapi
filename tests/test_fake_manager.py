@@ -39,6 +39,11 @@ class FakeManagerTest(unittest.TestCase):
         self.assertTrue(self.manager.removed)
 
     def test_is_ok(self):
-        self.assertFalse(self.manager.is_ok())
+        ok, msg = self.manager.is_ok()
+        self.assertFalse(ok)
+        self.assertEqual("error", msg)
         self.manager.ok = True
-        self.assertTrue(self.manager.is_ok())
+        self.manager.msg = ""
+        ok, msg = self.manager.is_ok()
+        self.assertTrue(ok)
+        self.assertEqual("", msg)
