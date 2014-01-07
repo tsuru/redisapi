@@ -80,8 +80,8 @@ class RedisManager(object):
             conn = redis.Connection(**kw)
             conn.connect()
         except Exception as e:
-            return str(e), 500
-        return "", 204
+            return False, str(e)
+        return True, ""
 
 
 @app.route("/resources/<name>", methods=["POST"])
@@ -115,4 +115,7 @@ def remove_instance(name):
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
     manager = RedisManager()
-    return manager.status()
+    ok, msg = manager.status()
+    if ok:
+        return msg, 204
+    return msg, 500
