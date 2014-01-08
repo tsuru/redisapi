@@ -16,6 +16,8 @@ class DockerManagerTest(unittest.TestCase):
     def setUp(self):
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
+        os.environ["REDIS_IMAGE"] = "redisapi"
+        self.addCleanup(self.remove_env, "REDIS_IMAGE")
         from managers import DockerManager
         self.manager = DockerManager()
         self.manager.client = mock.Mock()
@@ -24,12 +26,16 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.instances.remove()
 
     def test_add_instance(self):
-        self.manager.client.build.return_value = "12", ""
+        self.manager.client.create_container.return_value = {"Id": "12"}
         self.manager.client.inspect_container.return_value = {
             'NetworkSettings': {
                 u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
         self.manager.add_instance("name")
-        self.manager.client.build.assert_called()
+        self.manager.client.create_container.assert_called_with(
+            self.manager.image_name,
+            command="",
+        )
+        self.manager.client.start.assert_called_with("12")
         instance = self.manager.instances.find_one({"name": "name"})
         self.assertEqual(instance["name"], "name")
         self.assertEqual(instance["container_id"], "12")
@@ -69,5 +75,16 @@ class DockerManagerTest(unittest.TestCase):
         exc = cm.exception
         self.assertEqual(
             (u"You must define the REDIS_SERVER_HOST environment variable.",),
+            exc.args,
+        )
+
+    def test_running_without_the_REDIS_IMAGE_variable(self):
+        del os.environ["REDIS_IMAGE"]
+        with self.assertRaises(Exception) as cm:
+            from managers import DockerManager
+            DockerManager()
+        exc = cm.exception
+        self.assertEqual(
+            (u"You must define the REDIS_IMAGE environment variable.",),
             exc.args,
         )

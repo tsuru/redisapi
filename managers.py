@@ -5,7 +5,6 @@
 import os
 import redis
 import docker
-import io
 
 from pymongo import MongoClient
 
@@ -19,6 +18,13 @@ class DockerManager(object):
                   "environment variable."
             raise Exception(msg)
 
+        try:
+            self.image_name = os.environ["REDIS_IMAGE"]
+        except KeyError:
+            msg = u"You must define the REDIS_IMAGE " \
+                  "environment variable."
+            raise Exception(msg)
+
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
@@ -26,17 +32,13 @@ class DockerManager(object):
         self.instances = mongo['redisapi']['instances']
 
     def add_instance(self, instance_name):
-        script = io.BytesIO('\n'.join([
-            'FROM base',
-            'RUN mkdir -p /tmp/test',
-            'EXPOSE 8080',
-        ]))
-        id, output = self.client.build(fileobj=script)
-        container = self.client.inspect_container(id)
+        output = self.client.create_container(self.image_name, command="")
+        self.client.start(output["Id"])
+        container = self.client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         instance = {
             'name': instance_name,
-            'container_id': id,
+            'container_id': output["Id"],
             'host': self.server,
             'port': port,
         }
