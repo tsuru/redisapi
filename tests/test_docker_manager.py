@@ -26,6 +26,8 @@ class FakeManagerTest(unittest.TestCase):
         instance = self.manager.instances.find_one({"name": "name"})
         self.assertEqual(instance["name"], "name")
         self.assertEqual(instance["container_id"], "12")
+        self.assertEqual(instance["host"], "0.0.0.0")
+        self.assertEqual(instance["port"], u"49154")
 
     def test_remove_instance(self):
         instance = {
