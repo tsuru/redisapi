@@ -132,4 +132,5 @@ class RedisManager(object):
 managers = {
     'shared': RedisManager,
     'fake': FakeManager,
+    'docker': DockerManager,
 }
