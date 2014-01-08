@@ -35,8 +35,12 @@ class DockerManager(object):
         }
         self.instances.insert(instance)
 
-    def bind(self):
-        pass
+    def bind(self, name):
+        instance = self.instances.find_one({"name": name})
+        return {
+            "REDIS_HOST": instance["host"],
+            "REDIS_PORT": instance["port"],
+        }
 
     def unbind(self):
         pass
