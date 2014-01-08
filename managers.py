@@ -7,20 +7,29 @@ import redis
 import docker
 import io
 
+from pymongo import MongoClient
+
 
 class DockerManager(object):
     def __init__(self):
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
+        mongo = MongoClient()
+        self.instances = mongo['redisapi']['instances']
 
-    def add_instance(self):
+    def add_instance(self, instance_name):
         script = io.BytesIO('\n'.join([
             'FROM base',
             'RUN mkdir -p /tmp/test',
             'EXPOSE 8080',
         ]))
-        self.client.build(fileobj=script)
+        id, output = self.client.build(fileobj=script)
+        instance = {
+            'name': instance_name,
+            'container_id': id,
+        }
+        self.instances.insert(instance)
 
     def bind(self):
         pass

@@ -14,8 +14,12 @@ class FakeManagerTest(unittest.TestCase):
         self.manager.client = mock.Mock()
 
     def test_add_instance(self):
-        self.manager.add_instance()
+        self.manager.client.build.return_value = "12", ""
+        self.manager.add_instance("name")
         self.manager.client.build.assert_called()
+        instance = self.manager.instances.find_one({"name": "name"})
+        self.assertEqual(instance["name"], "name")
+        self.assertEqual(instance["container_id"], "12")
 
     def test_remove_instance(self):
         self.manager.remove_instance()
