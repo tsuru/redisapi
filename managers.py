@@ -37,10 +37,11 @@ class DockerManager(object):
     def unbind(self):
         pass
 
-    def remove_instance(self):
-        # TODO: pass container id
-        self.client.stop()
-        self.client.remove_container()
+    def remove_instance(self, name):
+        instance = self.instances.find_one({"name": "name"})
+        self.client.stop(instance["container_id"])
+        self.client.remove_container(instance["container_id"])
+        self.instances.remove({"name": "name"})
 
     def is_ok(self):
         pass
