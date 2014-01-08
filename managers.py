@@ -25,9 +25,15 @@ class DockerManager(object):
             'EXPOSE 8080',
         ]))
         id, output = self.client.build(fileobj=script)
+        container = self.client.inspect_container(id)
+        address = '{}:{}'.format(
+            '0.0.0.0',
+            container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort'],
+        )
         instance = {
             'name': instance_name,
             'container_id': id,
+            'address': address,
         }
         self.instances.insert(instance)
 

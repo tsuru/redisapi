@@ -18,6 +18,9 @@ class FakeManagerTest(unittest.TestCase):
 
     def test_add_instance(self):
         self.manager.client.build.return_value = "12", ""
+        self.manager.client.inspect_container.return_value = {
+            'NetworkSettings': {
+                u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
         self.manager.add_instance("name")
         self.manager.client.build.assert_called()
         instance = self.manager.instances.find_one({"name": "name"})
