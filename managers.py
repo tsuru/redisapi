@@ -12,6 +12,13 @@ from pymongo import MongoClient
 
 class DockerManager(object):
     def __init__(self):
+        try:
+            self.server = os.environ["REDIS_SERVER_HOST"]
+        except KeyError:
+            msg = u"You must define the REDIS_SERVER_HOST " \
+                  "environment variable."
+            raise Exception(msg)
+
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )

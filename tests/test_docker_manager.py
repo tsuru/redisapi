@@ -4,11 +4,18 @@
 
 import unittest
 import mock
+import os
 
 
-class FakeManagerTest(unittest.TestCase):
+class DockerManagerTest(unittest.TestCase):
+
+    def remove_env(self, env):
+        if env in os.environ:
+            del os.environ[env]
 
     def setUp(self):
+        os.environ["REDIS_SERVER_HOST"] = "localhost"
+        self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         from managers import DockerManager
         self.manager = DockerManager()
         self.manager.client = mock.Mock()
@@ -53,3 +60,14 @@ class FakeManagerTest(unittest.TestCase):
         result = self.manager.bind(name="name")
         self.assertEqual(result['REDIS_HOST'], instance['host'])
         self.assertEqual(result['REDIS_PORT'], instance['port'])
+
+    def test_running_without_the_REDIS_SERVER_HOST_variable(self):
+        del os.environ["REDIS_SERVER_HOST"]
+        with self.assertRaises(Exception) as cm:
+            from managers import DockerManager
+            DockerManager()
+        exc = cm.exception
+        self.assertEqual(
+            (u"You must define the REDIS_SERVER_HOST environment variable.",),
+            exc.args,
+        )
