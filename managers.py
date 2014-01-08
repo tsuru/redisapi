@@ -37,7 +37,7 @@ class DockerManager(object):
         instance = {
             'name': instance_name,
             'container_id': id,
-            'host': '0.0.0.0',
+            'host': self.server,
             'port': port,
         }
         self.instances.insert(instance)
