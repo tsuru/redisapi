@@ -46,7 +46,7 @@ class DockerManager(object):
         pass
 
     def remove_instance(self, name):
-        instance = self.instances.find_one({"name": "name"})
+        instance = self.instances.find_one({"name": name})
         self.client.stop(instance["container_id"])
         self.client.remove_container(instance["container_id"])
         self.instances.remove({"name": "name"})
