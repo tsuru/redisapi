@@ -37,7 +37,7 @@ class SharedManagerTest(unittest.TestCase):
         self.manager = RedisManager()
 
     def test_bind_returns_the_server_host_and_port(self):
-        envs = self.manager.bind()
+        envs = self.manager.bind("")
         self.assertEqual(
             {"REDIS_HOST": "localhost", "REDIS_PORT": "6379"},
             envs
@@ -46,7 +46,7 @@ class SharedManagerTest(unittest.TestCase):
     def test_bind_returns_the_REDIS_PUBLIC_HOST_when_its_defined(self):
         os.environ["REDIS_PUBLIC_HOST"] = "redis.tsuru.io"
         self.addCleanup(self.remove_env, "REDIS_PUBLIC_HOST")
-        envs = self.manager.bind()
+        envs = self.manager.bind("")
         want = {
             "REDIS_HOST": "redis.tsuru.io",
             "REDIS_PORT": "6379",
@@ -56,7 +56,7 @@ class SharedManagerTest(unittest.TestCase):
     def test_bind_returns_the_REDIS_SERVER_PORT_when_its_defined(self):
         os.environ["REDIS_SERVER_PORT"] = "12345"
         self.addCleanup(self.remove_env, "REDIS_SERVER_PORT")
-        envs = self.manager.bind()
+        envs = self.manager.bind("")
         want = {
             "REDIS_HOST": "localhost",
             "REDIS_PORT": "12345",
@@ -66,7 +66,7 @@ class SharedManagerTest(unittest.TestCase):
     def test_bind_returns_the_password_when_its_defined(self):
         os.environ["REDIS_SERVER_PASSWORD"] = "s3cr3t"
         self.addCleanup(self.remove_env, "REDIS_SERVER_PASSWORD")
-        envs = self.manager.bind()
+        envs = self.manager.bind("")
         want = {
             "REDIS_HOST": "localhost",
             "REDIS_PORT": "6379",

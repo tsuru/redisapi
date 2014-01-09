@@ -76,16 +76,16 @@ class FakeManager(object):
     ok = False
     msg = "error"
 
-    def add_instance(self):
+    def add_instance(self, name):
         self.instance_added = True
 
-    def bind(self):
+    def bind(self, name):
         self.binded = True
 
     def unbind(self):
         self.unbinded = True
 
-    def remove_instance(self):
+    def remove_instance(self, name):
         self.removed = True
 
     def is_ok(self):
@@ -96,10 +96,10 @@ class RedisManager(object):
     def __init__(self):
         self.server = get_value("REDIS_SERVER_HOST")
 
-    def add_instance(self):
+    def add_instance(self, name):
         pass
 
-    def bind(self):
+    def bind(self, name):
         host = os.environ.get("REDIS_PUBLIC_HOST", self.server)
         port = os.environ.get("REDIS_SERVER_PORT", "6379")
         result = {
@@ -114,7 +114,7 @@ class RedisManager(object):
     def unbind(self):
         pass
 
-    def remove_instance(self):
+    def remove_instance(self, name):
         pass
 
     def is_ok(self):

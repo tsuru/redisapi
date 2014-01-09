@@ -31,7 +31,7 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertIsInstance(manager(), FakeManager)
 
     def test_add_instance(self):
-        response = self.app.post("/resources")
+        response = self.app.post("/resources", data={"name": "name"})
         self.assertEqual(201, response.status_code)
         self.assertEqual("", response.data)
 

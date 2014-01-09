@@ -6,6 +6,7 @@ import json
 import flask
 import os
 
+from flask import request
 from managers import managers
 
 
@@ -19,7 +20,7 @@ def manager():
 
 @app.route("/resources/<name>", methods=["POST"])
 def bind(name):
-    result = manager().bind()
+    result = manager().bind(name)
     return json.dumps(result), 201
 
 
@@ -31,13 +32,13 @@ def unbind(name, host):
 
 @app.route("/resources", methods=["POST"])
 def add_instance():
-    manager().add_instance()
+    manager().add_instance(request.form['name'])
     return "", 201
 
 
 @app.route("/resources/<name>", methods=["DELETE"])
 def remove_instance(name):
-    manager().remove_instance()
+    manager().remove_instance(name)
     return "", 200
 
 

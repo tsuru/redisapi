@@ -13,12 +13,12 @@ class FakeManagerTest(unittest.TestCase):
 
     def test_add_instance(self):
         self.assertFalse(self.manager.instance_added)
-        self.manager.add_instance()
+        self.manager.add_instance("")
         self.assertTrue(self.manager.instance_added)
 
     def test_bind(self):
         self.assertFalse(self.manager.binded)
-        self.manager.bind()
+        self.manager.bind("")
         self.assertTrue(self.manager.binded)
 
     def test_unbind(self):
@@ -28,7 +28,7 @@ class FakeManagerTest(unittest.TestCase):
 
     def test_remove_instance(self):
         self.assertFalse(self.manager.removed)
-        self.manager.remove_instance()
+        self.manager.remove_instance("")
         self.assertTrue(self.manager.removed)
 
     def test_is_ok(self):
