@@ -96,10 +96,22 @@ class DockerManagerTest(unittest.TestCase):
     def test_mongodb_host_environ(self, mongo_mock):
         from managers import DockerManager
         DockerManager()
-        mongo_mock.assert_called_with(host="localhost")
+        mongo_mock.assert_called_with(host="localhost", port=27017)
 
         os.environ["MONGODB_HOST"] = "0.0.0.0"
         self.addCleanup(self.remove_env, "MONGODB_HOST")
         from managers import DockerManager
         DockerManager()
-        mongo_mock.assert_called_with(host="0.0.0.0")
+        mongo_mock.assert_called_with(host="0.0.0.0", port=27017)
+
+    @mock.patch("pymongo.MongoClient")
+    def test_mongodb_port_environ(self, mongo_mock):
+        from managers import DockerManager
+        DockerManager()
+        mongo_mock.assert_called_with(host='localhost', port=27017)
+
+        os.environ["MONGODB_PORT"] = "3333"
+        self.addCleanup(self.remove_env, "MONGODB_PORT")
+        from managers import DockerManager
+        DockerManager()
+        mongo_mock.assert_called_with(host='localhost', port=3333)

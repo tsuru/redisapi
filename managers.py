@@ -24,13 +24,14 @@ class DockerManager(object):
             raise Exception(msg)
 
         mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
+        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
 
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
 
         from pymongo import MongoClient
-        mongo = MongoClient(host=mongodb_host)
+        mongo = MongoClient(host=mongodb_host, port=mongodb_port)
 
         self.instances = mongo['redisapi']['instances']
 
