@@ -8,7 +8,7 @@ import unittest
 class FakeManagerTest(unittest.TestCase):
 
     def setUp(self):
-        from managers import FakeManager
+        from redisapi.managers import FakeManager
         self.manager = FakeManager()
 
     def test_add_instance(self):

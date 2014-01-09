@@ -16,18 +16,18 @@ class RedisAPITestCase(unittest.TestCase):
     def setUp(self):
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
-        import redisapi
-        self.app = redisapi.app.test_client()
+        from redisapi import api
+        self.app = api.app.test_client()
 
     def test_manager(self):
-        from managers import RedisManager
-        from redisapi import manager
+        from redisapi.managers import RedisManager
+        from redisapi.api import manager
         self.assertIsInstance(manager(), RedisManager)
 
     def test_manager_fake_manager(self):
         os.environ["API_MANAGER"] = "fake"
-        from managers import FakeManager
-        from redisapi import manager
+        from redisapi.managers import FakeManager
+        from redisapi.api import manager
         self.assertIsInstance(manager(), FakeManager)
 
     def test_add_instance(self):
@@ -50,13 +50,13 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual({"REDIS_HOST": "localhost", "REDIS_PORT": "6379"}, j)
 
     def test_unbind(self):
-        import redisapi
-        content, code = redisapi.unbind("instance", "10.10.10.10")
+        from redisapi import api
+        content, code = api.unbind("instance", "10.10.10.10")
         self.assertEqual(200, code)
         self.assertEqual("", content)
 
     def test_status(self):
-        import redisapi
-        content, code = redisapi.status("myinstance")
+        from redisapi import api
+        content, code = api.status("myinstance")
         self.assertEqual(500, code)
         self.assertEqual("error", content)

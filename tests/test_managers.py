@@ -4,16 +4,16 @@
 
 import unittest
 
-from managers import DockerManager, RedisManager, FakeManager, managers
+from redisapi import managers
 
 
 class ManagersTest(unittest.TestCase):
 
     def test_docker(self):
-        self.assertEqual(managers['docker'], DockerManager)
+        self.assertEqual(managers.managers['docker'], managers.DockerManager)
 
     def test_fake(self):
-        self.assertEqual(managers['fake'], FakeManager)
+        self.assertEqual(managers.managers['fake'], managers.FakeManager)
 
     def test_shared(self):
-        self.assertEqual(managers['shared'], RedisManager)
+        self.assertEqual(managers.managers['shared'], managers.RedisManager)

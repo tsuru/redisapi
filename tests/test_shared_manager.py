@@ -33,7 +33,7 @@ class SharedManagerTest(unittest.TestCase):
     def setUp(self):
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
-        from managers import RedisManager
+        from redisapi.managers import RedisManager
         self.manager = RedisManager()
 
     def test_bind_returns_the_server_host_and_port(self):
@@ -106,7 +106,7 @@ class SharedManagerTest(unittest.TestCase):
     def test_running_without_the_REDIS_SERVER_HOST_variable(self):
         del os.environ["REDIS_SERVER_HOST"]
         with self.assertRaises(Exception) as cm:
-            from managers import RedisManager
+            from redisapi.managers import RedisManager
             RedisManager()
         exc = cm.exception
         self.assertEqual(

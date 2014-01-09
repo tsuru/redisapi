@@ -1,1 +1,1 @@
-api: gunicorn redisapi:app -b 0.0.0.0:8888
+api: gunicorn redisapi.api:app -b 0.0.0.0:8888
