@@ -23,17 +23,18 @@ class DockerManager(object):
                   "environment variable."
             raise Exception(msg)
 
-        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
-        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
-
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
 
-        from pymongo import MongoClient
-        mongo = MongoClient(host=mongodb_host, port=mongodb_port)
+        self.instances = self.mongo()['redisapi']['instances']
 
-        self.instances = mongo['redisapi']['instances']
+    def mongo(self):
+        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
+        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
+
+        from pymongo import MongoClient
+        return MongoClient(host=mongodb_host, port=mongodb_port)
 
     def add_instance(self, instance_name):
         output = self.client.create_container(self.image_name, command="")
