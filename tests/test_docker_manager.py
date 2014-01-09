@@ -91,3 +91,15 @@ class DockerManagerTest(unittest.TestCase):
             (u"You must define the REDIS_IMAGE environment variable.",),
             exc.args,
         )
+
+    @mock.patch("pymongo.MongoClient")
+    def test_mongodb_host_environ(self, mongo_mock):
+        from managers import DockerManager
+        DockerManager()
+        mongo_mock.assert_called_with(host="localhost")
+
+        os.environ["MONGODB_HOST"] = "0.0.0.0"
+        self.addCleanup(self.remove_env, "MONGODB_HOST")
+        from managers import DockerManager
+        DockerManager()
+        mongo_mock.assert_called_with(host="0.0.0.0")

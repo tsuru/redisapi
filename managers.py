@@ -6,8 +6,6 @@ import os
 import redis
 import docker
 
-from pymongo import MongoClient
-
 
 class DockerManager(object):
     def __init__(self):
@@ -25,10 +23,15 @@ class DockerManager(object):
                   "environment variable."
             raise Exception(msg)
 
+        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
+
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
-        mongo = MongoClient()
+
+        from pymongo import MongoClient
+        mongo = MongoClient(host=mongodb_host)
+
         self.instances = mongo['redisapi']['instances']
 
     def add_instance(self, instance_name):
