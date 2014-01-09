@@ -7,25 +7,26 @@ import redis
 import docker
 
 
+def get_value(key):
+    try:
+        value = os.environ[key]
+    except KeyError:
+        msg = u"You must define the {} " \
+              "environment variable.".format(key)
+        raise Exception(msg)
+    return value
+
+
 class DockerManager(object):
     def __init__(self):
-        self.server = self.get_value("REDIS_SERVER_HOST")
-        self.image_name = self.get_value("REDIS_IMAGE")
+        self.server = get_value("REDIS_SERVER_HOST")
+        self.image_name = get_value("REDIS_IMAGE")
 
         self.client = docker.Client(
             base_url='unix://var/run/docker.sock'
         )
 
         self.instances = self.mongo()['redisapi']['instances']
-
-    def get_value(self, key):
-        try:
-            value = os.environ[key]
-        except KeyError:
-            msg = u"You must define the {} " \
-                  "environment variable.".format(key)
-            raise Exception(msg)
-        return value
 
     def mongo(self):
         mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
@@ -93,12 +94,7 @@ class FakeManager(object):
 
 class RedisManager(object):
     def __init__(self):
-        try:
-            self.server = os.environ["REDIS_SERVER_HOST"]
-        except KeyError:
-            msg = u"You must define the REDIS_SERVER_HOST " \
-                  "environment variable."
-            raise Exception(msg)
+        self.server = get_value("REDIS_SERVER_HOST")
 
     def add_instance(self):
         pass
