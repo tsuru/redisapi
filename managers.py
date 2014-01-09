@@ -33,7 +33,7 @@ class DockerManager(object):
 
     def add_instance(self, instance_name):
         output = self.client.create_container(self.image_name, command="")
-        self.client.start(output["Id"])
+        self.client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
         container = self.client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         instance = {

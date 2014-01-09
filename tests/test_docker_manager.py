@@ -35,7 +35,10 @@ class DockerManagerTest(unittest.TestCase):
             self.manager.image_name,
             command="",
         )
-        self.manager.client.start.assert_called_with("12")
+        self.manager.client.start.assert_called_with(
+            "12",
+            port_bindings={6379: ('0.0.0.0',)}
+        )
         instance = self.manager.instances.find_one({"name": "name"})
         self.assertEqual(instance["name"], "name")
         self.assertEqual(instance["container_id"], "12")
