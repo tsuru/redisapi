@@ -5,3 +5,4 @@ gunicorn==0.17.2
 redis==2.7.2
 docker-py==0.2.3
 pymongo==2.6.3
+pyzabbix==0.6
