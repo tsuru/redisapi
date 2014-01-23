@@ -5,6 +5,10 @@
 
 class FakeHealthCheck(object):
     added = False
+    removed = False
 
     def add(self, host, port):
         self.added = True
+
+    def remove(self, host, port):
+        self.removed = True

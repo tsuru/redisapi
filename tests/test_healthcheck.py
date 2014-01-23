@@ -15,3 +15,8 @@ class HealthCheckManagerTest(unittest.TestCase):
         self.assertFalse(self.hc.added)
         self.hc.add(host="localhost", port=8080)
         self.assertTrue(self.hc.added)
+
+    def test_remove(self):
+        self.assertFalse(self.hc.removed)
+        self.hc.remove(host="localhost", port=8080)
+        self.assertTrue(self.hc.removed)
