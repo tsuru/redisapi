@@ -12,3 +12,16 @@ class FakeHealthCheck(object):
 
     def remove(self, host, port):
         self.removed = True
+
+
+class ZabbixHealthCheck(object):
+    def __init__(self):
+        url = ""
+        user = ""
+        password = ""
+        from pyzabbix import ZabbixAPI
+        self.zapi = ZabbixAPI(url)
+        self.zapi.login(user, password)
+
+    def add(self, host, port):
+        pass
