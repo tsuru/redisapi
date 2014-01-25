@@ -36,3 +36,12 @@ class ZabbixHCTest(unittest.TestCase):
 
     def test_add(self):
         self.hc.add(host="localhost", port=8080)
+        self.hc.zapi.item.create.assert_called_with(
+            name="redis healthcheck for localhost:8080",
+            key_="net.tcp.service[telnet,localhost,8080]",
+            delay=60,
+            hostid="",
+            interfaceid="",
+            type=3,
+            value_type=3,
+        )

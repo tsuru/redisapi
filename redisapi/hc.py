@@ -24,4 +24,12 @@ class ZabbixHealthCheck(object):
         self.zapi.login(user, password)
 
     def add(self, host, port):
-        pass
+        self.zapi.item.create(
+            name="redis healthcheck for {}:{}".format(host, port),
+            key_="net.tcp.service[telnet,{},{}]".format(host, port),
+            delay=60,
+            hostid="",
+            interfaceid="",
+            type=3,
+            value_type=3,
+        )
