@@ -33,3 +33,7 @@ class ZabbixHealthCheck(object):
             type=3,
             value_type=3,
         )
+
+health_checkers = {
+    'zabbix':  ZabbixHealthCheck,
+}

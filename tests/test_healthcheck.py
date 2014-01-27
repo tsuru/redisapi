@@ -5,6 +5,8 @@
 import unittest
 import mock
 
+from redisapi import hc
+
 
 class FakeHCTest(unittest.TestCase):
 
@@ -45,3 +47,9 @@ class ZabbixHCTest(unittest.TestCase):
             type=3,
             value_type=3,
         )
+
+
+class HCTest(unittest.TestCase):
+
+    def test_zabbix(self):
+        self.assertEqual(hc.health_checkers['zabbix'], hc.ZabbixHealthCheck)
