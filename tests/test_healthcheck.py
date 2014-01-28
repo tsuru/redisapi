@@ -73,13 +73,22 @@ class ZabbixHCTest(unittest.TestCase):
         self.assertEqual(item["trigger"], "apto")
 
     def test_delete(self):
+        item = {
+            "host": "localhost",
+            "port": 8080,
+            "trigger": 43,
+            "item": 42,
+        }
+        self.hc.items.insert(item)
+
         self.hc.delete(host="localhost", port=8080)
-        self.hc.zapi.trigger.delete.assert_called_with(
-            [43],
-        )
-        self.hc.zapi.item.delete.assert_called_with(
-            [42],
-        )
+
+        self.hc.zapi.trigger.delete.assert_called_with([43])
+        self.hc.zapi.item.delete.assert_called_with([42])
+        lenght = self.hc.items.find({
+            "host": "localhost",
+            "port": 8080}).count()
+        self.assertEqual(lenght, 0)
 
     @mock.patch("pymongo.MongoClient")
     @mock.patch("pyzabbix.ZabbixAPI")

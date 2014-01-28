@@ -59,8 +59,10 @@ class ZabbixHealthCheck(object):
         self.items.insert(item)
 
     def delete(self, host, port):
-        self.zapi.trigger.delete([43])
-        self.zapi.item.delete([42])
+        item = self.items.find_one({"host": host, "port": port})
+        self.zapi.trigger.delete([item["trigger"]])
+        self.zapi.item.delete([item["item"]])
+        self.items.remove({"host": host, "port": port})
 
 
 health_checkers = {
