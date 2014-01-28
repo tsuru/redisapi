@@ -38,14 +38,20 @@ class ZabbixHCTest(unittest.TestCase):
 
     def test_add(self):
         self.hc.add(host="localhost", port=8080)
+        item_key = "net.tcp.service[telnet,localhost,8080]"
         self.hc.zapi.item.create.assert_called_with(
             name="redis healthcheck for localhost:8080",
-            key_="net.tcp.service[telnet,localhost,8080]",
+            key_=item_key,
             delay=60,
             hostid="",
             interfaceid="",
             type=3,
             value_type=3,
+        )
+        self.hc.zapi.trigger.create.assert_called_with(
+            description="trigger hc for redis localhost:8080",
+            expression="{{Zabbix Server:{}.last()}}=1".format(item_key),
+            priority=5,
         )
 
 
