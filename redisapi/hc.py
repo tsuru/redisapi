@@ -66,5 +66,6 @@ class ZabbixHealthCheck(object):
 
 
 health_checkers = {
+    'fake': FakeHealthCheck,
     'zabbix':  ZabbixHealthCheck,
 }

@@ -121,3 +121,4 @@ class HCTest(unittest.TestCase):
 
     def test_zabbix(self):
         self.assertEqual(hc.health_checkers['zabbix'], hc.ZabbixHealthCheck)
+        self.assertEqual(hc.health_checkers['fake'], hc.FakeHealthCheck)
