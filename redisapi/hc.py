@@ -41,6 +41,7 @@ class ZabbixHealthCheck(object):
         )
 
     def delete(self, host, port):
+        self.zapi.trigger.delete([43])
         self.zapi.item.delete([42])
 
 

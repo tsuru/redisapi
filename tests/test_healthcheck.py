@@ -56,6 +56,9 @@ class ZabbixHCTest(unittest.TestCase):
 
     def test_delete(self):
         self.hc.delete(host="localhost", port=8080)
+        self.hc.zapi.trigger.delete.assert_called_with(
+            [43],
+        )
         self.hc.zapi.item.delete.assert_called_with(
             [42],
         )
