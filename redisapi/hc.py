@@ -25,7 +25,7 @@ class ZabbixHealthCheck(object):
         self.zapi = ZabbixAPI(url)
         self.zapi.login(user, password)
 
-        self.instances = self.mongo()['redisapi']['zabbix']
+        self.items = self.mongo()['redisapi']['zabbix']
 
     def mongo(self):
         mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
@@ -36,7 +36,7 @@ class ZabbixHealthCheck(object):
 
     def add(self, host, port):
         item_key = "net.tcp.service[telnet,{},{}]".format(host, port)
-        self.zapi.item.create(
+        result = self.zapi.item.create(
             name="redis healthcheck for {}:{}".format(host, port),
             key_=item_key,
             delay=60,
@@ -50,6 +50,12 @@ class ZabbixHealthCheck(object):
             expression="{{Zabbix Server:{}.last()}}=1".format(item_key),
             priority=5,
         )
+        item = {
+            'host': host,
+            'port': port,
+            'item': result['itemids'][0],
+        }
+        self.items.insert(item)
 
     def delete(self, host, port):
         self.zapi.trigger.delete([43])

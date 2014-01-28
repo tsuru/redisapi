@@ -41,7 +41,11 @@ class ZabbixHCTest(unittest.TestCase):
         zabbix_mock.assert_called_with('')
         zapi_mock.login.assert_called_with('', '')
 
+    def tearDown(self):
+        self.hc.items.remove()
+
     def test_add(self):
+        self.hc.zapi.item.create.return_value = {"itemids": ["xpto"]}
         self.hc.add(host="localhost", port=8080)
         item_key = "net.tcp.service[telnet,localhost,8080]"
         self.hc.zapi.item.create.assert_called_with(
@@ -58,6 +62,11 @@ class ZabbixHCTest(unittest.TestCase):
             expression="{{Zabbix Server:{}.last()}}=1".format(item_key),
             priority=5,
         )
+
+        item = self.hc.items.find_one({"host": "localhost", "port": 8080})
+        self.assertEqual(item["host"], "localhost")
+        self.assertEqual(item["port"], 8080)
+        self.assertEqual(item["item"], "xpto")
 
     def test_delete(self):
         self.hc.delete(host="localhost", port=8080)
