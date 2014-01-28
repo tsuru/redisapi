@@ -46,7 +46,10 @@ class ZabbixHCTest(unittest.TestCase):
 
     def test_add(self):
         self.hc.zapi.item.create.return_value = {"itemids": ["xpto"]}
+        self.hc.zapi.trigger.create.return_value = {"itemids": ["apto"]}
+
         self.hc.add(host="localhost", port=8080)
+
         item_key = "net.tcp.service[telnet,localhost,8080]"
         self.hc.zapi.item.create.assert_called_with(
             name="redis healthcheck for localhost:8080",
@@ -67,6 +70,7 @@ class ZabbixHCTest(unittest.TestCase):
         self.assertEqual(item["host"], "localhost")
         self.assertEqual(item["port"], 8080)
         self.assertEqual(item["item"], "xpto")
+        self.assertEqual(item["trigger"], "apto")
 
     def test_delete(self):
         self.hc.delete(host="localhost", port=8080)

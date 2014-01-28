@@ -36,7 +36,7 @@ class ZabbixHealthCheck(object):
 
     def add(self, host, port):
         item_key = "net.tcp.service[telnet,{},{}]".format(host, port)
-        result = self.zapi.item.create(
+        item_result = self.zapi.item.create(
             name="redis healthcheck for {}:{}".format(host, port),
             key_=item_key,
             delay=60,
@@ -45,7 +45,7 @@ class ZabbixHealthCheck(object):
             type=3,
             value_type=3,
         )
-        self.zapi.trigger.create(
+        trigger_result = self.zapi.trigger.create(
             description="trigger hc for redis {}:{}".format(host, port),
             expression="{{Zabbix Server:{}.last()}}=1".format(item_key),
             priority=5,
@@ -53,7 +53,8 @@ class ZabbixHealthCheck(object):
         item = {
             'host': host,
             'port': port,
-            'item': result['itemids'][0],
+            'item': item_result['itemids'][0],
+            'trigger': trigger_result['itemids'][0],
         }
         self.items.insert(item)
 
