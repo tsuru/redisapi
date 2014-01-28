@@ -40,6 +40,10 @@ class ZabbixHealthCheck(object):
             priority=5,
         )
 
+    def delete(self, host, port):
+        self.zapi.item.delete([42])
+
+
 health_checkers = {
     'zabbix':  ZabbixHealthCheck,
 }
