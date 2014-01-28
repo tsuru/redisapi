@@ -4,6 +4,7 @@
 
 import unittest
 import mock
+import os
 
 from redisapi import hc
 
@@ -26,6 +27,10 @@ class FakeHCTest(unittest.TestCase):
 
 
 class ZabbixHCTest(unittest.TestCase):
+
+    def remove_env(self, env):
+        if env in os.environ:
+            del os.environ[env]
 
     @mock.patch("pyzabbix.ZabbixAPI")
     def setUp(self, zabbix_mock):
@@ -62,6 +67,32 @@ class ZabbixHCTest(unittest.TestCase):
         self.hc.zapi.item.delete.assert_called_with(
             [42],
         )
+
+    @mock.patch("pymongo.MongoClient")
+    @mock.patch("pyzabbix.ZabbixAPI")
+    def test_mongodb_host_environ(self, zapi, mongo_mock):
+        from redisapi.hc import ZabbixHealthCheck
+        ZabbixHealthCheck()
+        mongo_mock.assert_called_with(host="localhost", port=27017)
+
+        os.environ["MONGODB_HOST"] = "0.0.0.0"
+        self.addCleanup(self.remove_env, "MONGODB_HOST")
+        from redisapi.hc import ZabbixHealthCheck
+        ZabbixHealthCheck()
+        mongo_mock.assert_called_with(host="0.0.0.0", port=27017)
+
+    @mock.patch("pymongo.MongoClient")
+    @mock.patch("pyzabbix.ZabbixAPI")
+    def test_mongodb_port_environ(self, zapi, mongo_mock):
+        from redisapi.hc import ZabbixHealthCheck
+        ZabbixHealthCheck()
+        mongo_mock.assert_called_with(host='localhost', port=27017)
+
+        os.environ["MONGODB_PORT"] = "3333"
+        self.addCleanup(self.remove_env, "MONGODB_PORT")
+        from redisapi.hc import ZabbixHealthCheck
+        ZabbixHealthCheck()
+        mongo_mock.assert_called_with(host='localhost', port=3333)
 
 
 class HCTest(unittest.TestCase):
