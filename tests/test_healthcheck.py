@@ -36,15 +36,17 @@ class ZabbixHCTest(unittest.TestCase):
     def setUp(self, zabbix_mock):
         url = "http://zbx.com"
         user = "user"
+        password = "pass"
         os.environ["ZABBIX_URL"] = url
         os.environ["ZABBIX_USER"] = user
+        os.environ["ZABBIX_PASSWORD"] = password
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         zapi_mock = mock.Mock()
         zabbix_mock.return_value = zapi_mock
         from redisapi.hc import ZabbixHealthCheck
         self.hc = ZabbixHealthCheck()
         zabbix_mock.assert_called_with(url)
-        zapi_mock.login.assert_called_with(user, '')
+        zapi_mock.login.assert_called_with(user, password)
 
     def tearDown(self):
         self.hc.items.remove()
@@ -140,6 +142,17 @@ class ZabbixHCTest(unittest.TestCase):
         exc = cm.exception
         self.assertEqual(
             (u"You must define the ZABBIX_USER environment variable.",),
+            exc.args,
+        )
+
+    def test_running_without_the_ZABBIX_PASSWORD_variable(self):
+        del os.environ["ZABBIX_PASSWORD"]
+        with self.assertRaises(Exception) as cm:
+            from redisapi.hc import ZabbixHealthCheck
+            ZabbixHealthCheck()
+        exc = cm.exception
+        self.assertEqual(
+            (u"You must define the ZABBIX_PASSWORD environment variable.",),
             exc.args,
         )
 

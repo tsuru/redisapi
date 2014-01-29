@@ -30,7 +30,7 @@ class ZabbixHealthCheck(object):
     def __init__(self):
         url = get_value("ZABBIX_URL")
         user = get_value("ZABBIX_USER")
-        password = ""
+        password = get_value("ZABBIX_PASSWORD")
         from pyzabbix import ZabbixAPI
         self.zapi = ZabbixAPI(url)
         self.zapi.login(user, password)
