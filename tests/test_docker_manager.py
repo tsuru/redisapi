@@ -38,6 +38,7 @@ class DockerManagerTest(unittest.TestCase):
         os.environ["ZABBIX_USER"] = "url"
         os.environ["ZABBIX_PASSWORD"] = "url"
         os.environ["HEALTH_CHECKER"] = "zabbix"
+        os.environ["ZABBIX_HOST"] = "2"
         from redisapi.hc import ZabbixHealthCheck
         from redisapi.managers import DockerManager
         manager = DockerManager()
