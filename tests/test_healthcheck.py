@@ -72,7 +72,7 @@ class ZabbixHCTest(unittest.TestCase):
         self.assertEqual(item["item"], "xpto")
         self.assertEqual(item["trigger"], "apto")
 
-    def test_delete(self):
+    def test_remove(self):
         item = {
             "host": "localhost",
             "port": 8080,
@@ -81,7 +81,7 @@ class ZabbixHCTest(unittest.TestCase):
         }
         self.hc.items.insert(item)
 
-        self.hc.delete(host="localhost", port=8080)
+        self.hc.remove(host="localhost", port=8080)
 
         self.hc.zapi.trigger.delete.assert_called_with([43])
         self.hc.zapi.item.delete.assert_called_with([42])
