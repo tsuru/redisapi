@@ -19,6 +19,11 @@ class RedisAPITestCase(unittest.TestCase):
         from redisapi import api
         self.app = api.app.test_client()
 
+    def test_hc(self):
+        from redisapi.hc import FakeHealthCheck
+        from redisapi.api import health_checker
+        self.assertIsInstance(health_checker(), FakeHealthCheck)
+
     def test_manager(self):
         from redisapi.managers import RedisManager
         from redisapi.api import manager
