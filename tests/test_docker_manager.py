@@ -66,12 +66,18 @@ class DockerManagerTest(unittest.TestCase):
         self.assertEqual(instance["port"], u"49154")
 
     def test_remove_instance(self):
+        remove_mock = mock.Mock()
+        self.manager.health_checker.return_value = remove_mock
         instance = {
             'name': "name",
             'container_id': "12",
+            'port': 123,
         }
         self.manager.instances.insert(instance)
+
         self.manager.remove_instance("name")
+
+        remove_mock.remove.assert_called_with("localhost", 123)
         self.manager.client.stop.assert_called_with(instance["container_id"])
         self.manager.client.remove_container.assert_called(
             instance["container_id"])

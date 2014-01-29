@@ -69,6 +69,7 @@ class DockerManager(object):
         instance = self.instances.find_one({"name": name})
         self.client.stop(instance["container_id"])
         self.client.remove_container(instance["container_id"])
+        self.health_checker().remove(self.server, instance["port"])
         self.instances.remove({"name": name})
 
     def is_ok(self):
