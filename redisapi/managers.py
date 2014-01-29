@@ -6,6 +6,8 @@ import os
 import redis
 import docker
 
+from hc import health_checkers
+
 
 def get_value(key):
     try:
@@ -34,6 +36,10 @@ class DockerManager(object):
 
         from pymongo import MongoClient
         return MongoClient(host=mongodb_host, port=mongodb_port)
+
+    def health_checker(self):
+        hc_name = os.environ.get("HEALTH_CHECKER", "fake")
+        return health_checkers[hc_name]()
 
     def add_instance(self, instance_name):
         output = self.client.create_container(self.image_name, command="")

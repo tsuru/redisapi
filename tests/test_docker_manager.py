@@ -25,6 +25,20 @@ class DockerManagerTest(unittest.TestCase):
     def tearDown(self):
         self.manager.instances.remove()
 
+    def test_hc(self):
+        from redisapi.hc import FakeHealthCheck
+        from redisapi.managers import DockerManager
+        manager = DockerManager()
+        self.assertIsInstance(manager.health_checker(), FakeHealthCheck)
+
+    @mock.patch("pyzabbix.ZabbixAPI")
+    def test_hc_zabbix(self, zabix_mock):
+        os.environ["HEALTH_CHECKER"] = "zabbix"
+        from redisapi.hc import ZabbixHealthCheck
+        from redisapi.managers import DockerManager
+        manager = DockerManager()
+        self.assertIsInstance(manager.health_checker(), ZabbixHealthCheck)
+
     def test_add_instance(self):
         self.manager.client.create_container.return_value = {"Id": "12"}
         self.manager.client.inspect_container.return_value = {

@@ -5,7 +5,6 @@
 import json
 import unittest
 import os
-import mock
 
 
 class RedisAPITestCase(unittest.TestCase):
@@ -19,18 +18,6 @@ class RedisAPITestCase(unittest.TestCase):
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         from redisapi import api
         self.app = api.app.test_client()
-
-    def test_hc(self):
-        from redisapi.hc import FakeHealthCheck
-        from redisapi.api import health_checker
-        self.assertIsInstance(health_checker(), FakeHealthCheck)
-
-    @mock.patch("pyzabbix.ZabbixAPI")
-    def test_hc_zabbix(self, zabix_mock):
-        os.environ["HEALTH_CHECKER"] = "zabbix"
-        from redisapi.hc import ZabbixHealthCheck
-        from redisapi.api import health_checker
-        self.assertIsInstance(health_checker(), ZabbixHealthCheck)
 
     def test_manager(self):
         from redisapi.managers import RedisManager

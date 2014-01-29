@@ -8,7 +8,6 @@ import os
 
 from flask import request
 from managers import managers
-from hc import health_checkers
 
 
 app = flask.Flask(__name__)
@@ -17,11 +16,6 @@ app = flask.Flask(__name__)
 def manager():
     manager_name = os.environ.get("API_MANAGER", "shared")
     return managers[manager_name]()
-
-
-def health_checker():
-    hc_name = os.environ.get("HEALTH_CHECKER", "fake")
-    return health_checkers[hc_name]()
 
 
 @app.route("/resources/<name>", methods=["POST"])
