@@ -5,6 +5,16 @@
 import os
 
 
+def get_value(key):
+    try:
+        value = os.environ[key]
+    except KeyError:
+        msg = u"You must define the {} " \
+              "environment variable.".format(key)
+        raise Exception(msg)
+    return value
+
+
 class FakeHealthCheck(object):
     added = False
     removed = False
@@ -18,7 +28,7 @@ class FakeHealthCheck(object):
 
 class ZabbixHealthCheck(object):
     def __init__(self):
-        url = ""
+        url = get_value("ZABBIX_URL")
         user = ""
         password = ""
         from pyzabbix import ZabbixAPI

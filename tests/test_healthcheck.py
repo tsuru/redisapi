@@ -34,11 +34,14 @@ class ZabbixHCTest(unittest.TestCase):
 
     @mock.patch("pyzabbix.ZabbixAPI")
     def setUp(self, zabbix_mock):
+        url = "http://zbx.com"
+        os.environ["ZABBIX_URL"] = url
+        self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         zapi_mock = mock.Mock()
         zabbix_mock.return_value = zapi_mock
         from redisapi.hc import ZabbixHealthCheck
         self.hc = ZabbixHealthCheck()
-        zabbix_mock.assert_called_with('')
+        zabbix_mock.assert_called_with(url)
         zapi_mock.login.assert_called_with('', '')
 
     def tearDown(self):
@@ -115,6 +118,17 @@ class ZabbixHCTest(unittest.TestCase):
         from redisapi.hc import ZabbixHealthCheck
         ZabbixHealthCheck()
         mongo_mock.assert_called_with(host='localhost', port=3333)
+
+    def test_running_without_the_ZABBIX_URL_variable(self):
+        del os.environ["ZABBIX_URL"]
+        with self.assertRaises(Exception) as cm:
+            from redisapi.hc import ZabbixHealthCheck
+            ZabbixHealthCheck()
+        exc = cm.exception
+        self.assertEqual(
+            (u"You must define the ZABBIX_URL environment variable.",),
+            exc.args,
+        )
 
 
 class HCTest(unittest.TestCase):
