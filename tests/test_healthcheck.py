@@ -55,7 +55,7 @@ class ZabbixHCTest(unittest.TestCase):
 
     def test_add(self):
         self.hc.zapi.item.create.return_value = {"itemids": ["xpto"]}
-        self.hc.zapi.trigger.create.return_value = {"itemids": ["apto"]}
+        self.hc.zapi.trigger.create.return_value = {"triggerids": ["apto"]}
 
         self.hc.add(host="localhost", port=8080)
 

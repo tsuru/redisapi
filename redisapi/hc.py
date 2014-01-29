@@ -66,7 +66,7 @@ class ZabbixHealthCheck(object):
             'host': host,
             'port': port,
             'item': item_result['itemids'][0],
-            'trigger': trigger_result['itemids'][0],
+            'trigger': trigger_result['triggerids'][0],
         }
         self.items.insert(item)
 
