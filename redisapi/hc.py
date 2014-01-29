@@ -29,7 +29,7 @@ class FakeHealthCheck(object):
 class ZabbixHealthCheck(object):
     def __init__(self):
         url = get_value("ZABBIX_URL")
-        user = ""
+        user = get_value("ZABBIX_USER")
         password = ""
         from pyzabbix import ZabbixAPI
         self.zapi = ZabbixAPI(url)

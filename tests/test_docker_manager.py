@@ -35,6 +35,7 @@ class DockerManagerTest(unittest.TestCase):
     @mock.patch("pyzabbix.ZabbixAPI")
     def test_hc_zabbix(self, zabix_mock):
         os.environ["ZABBIX_URL"] = "url"
+        os.environ["ZABBIX_USER"] = "url"
         os.environ["HEALTH_CHECKER"] = "zabbix"
         from redisapi.hc import ZabbixHealthCheck
         from redisapi.managers import DockerManager
