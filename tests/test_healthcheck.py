@@ -41,6 +41,7 @@ class ZabbixHCTest(unittest.TestCase):
         os.environ["ZABBIX_USER"] = user
         os.environ["ZABBIX_PASSWORD"] = password
         os.environ["ZABBIX_HOST"] = "1"
+        os.environ["ZABBIX_INTERFACE"] = "1"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         zapi_mock = mock.Mock()
         zabbix_mock.return_value = zapi_mock
@@ -64,7 +65,7 @@ class ZabbixHCTest(unittest.TestCase):
             key_=item_key,
             delay=60,
             hostid="1",
-            interfaceid="",
+            interfaceid="1",
             type=3,
             value_type=3,
         )
@@ -165,6 +166,17 @@ class ZabbixHCTest(unittest.TestCase):
         exc = cm.exception
         self.assertEqual(
             (u"You must define the ZABBIX_HOST environment variable.",),
+            exc.args,
+        )
+
+    def test_running_without_the_ZABBIX_INTERFACE_variable(self):
+        del os.environ["ZABBIX_INTERFACE"]
+        with self.assertRaises(Exception) as cm:
+            from redisapi.hc import ZabbixHealthCheck
+            ZabbixHealthCheck()
+        exc = cm.exception
+        self.assertEqual(
+            (u"You must define the ZABBIX_INTERFACE environment variable.",),
             exc.args,
         )
 

@@ -32,6 +32,7 @@ class ZabbixHealthCheck(object):
         user = get_value("ZABBIX_USER")
         password = get_value("ZABBIX_PASSWORD")
         self.host_id = get_value("ZABBIX_HOST")
+        self.interface_id = get_value("ZABBIX_INTERFACE")
         from pyzabbix import ZabbixAPI
         self.zapi = ZabbixAPI(url)
         self.zapi.login(user, password)
@@ -52,7 +53,7 @@ class ZabbixHealthCheck(object):
             key_=item_key,
             delay=60,
             hostid=self.host_id,
-            interfaceid="",
+            interfaceid=self.interface_id,
             type=3,
             value_type=3,
         )
