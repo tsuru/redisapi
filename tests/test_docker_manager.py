@@ -21,6 +21,7 @@ class DockerManagerTest(unittest.TestCase):
         from redisapi.managers import DockerManager
         self.manager = DockerManager()
         self.manager.client = mock.Mock()
+        self.manager.health_checker = mock.Mock()
 
     def tearDown(self):
         self.manager.instances.remove()
@@ -40,11 +41,15 @@ class DockerManagerTest(unittest.TestCase):
         self.assertIsInstance(manager.health_checker(), ZabbixHealthCheck)
 
     def test_add_instance(self):
+        add_mock = mock.Mock()
+        self.manager.health_checker.return_value = add_mock
         self.manager.client.create_container.return_value = {"Id": "12"}
         self.manager.client.inspect_container.return_value = {
             'NetworkSettings': {
                 u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
+
         self.manager.add_instance("name")
+
         self.manager.client.create_container.assert_called_with(
             self.manager.image_name,
             command="",
@@ -53,6 +58,7 @@ class DockerManagerTest(unittest.TestCase):
             "12",
             port_bindings={6379: ('0.0.0.0',)}
         )
+        add_mock.add.assert_called_with("localhost", u"49154")
         instance = self.manager.instances.find_one({"name": "name"})
         self.assertEqual(instance["name"], "name")
         self.assertEqual(instance["container_id"], "12")

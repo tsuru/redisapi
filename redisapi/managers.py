@@ -53,6 +53,7 @@ class DockerManager(object):
             'port': port,
         }
         self.instances.insert(instance)
+        self.health_checker().add(self.server, port)
 
     def bind(self, name):
         instance = self.instances.find_one({"name": name})
