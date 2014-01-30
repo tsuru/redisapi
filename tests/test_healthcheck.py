@@ -92,8 +92,8 @@ class ZabbixHCTest(unittest.TestCase):
 
         self.hc.remove(host="localhost", port=8080)
 
-        self.hc.zapi.trigger.delete.assert_called_with([43])
-        self.hc.zapi.item.delete.assert_called_with([42])
+        self.hc.zapi.trigger.delete.assert_called_with(43)
+        self.hc.zapi.item.delete.assert_called_with(42)
         lenght = self.hc.items.find({
             "host": "localhost",
             "port": 8080}).count()
