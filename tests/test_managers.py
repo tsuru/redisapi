@@ -16,4 +16,4 @@ class ManagersTest(unittest.TestCase):
         self.assertEqual(managers.managers['fake'], managers.FakeManager)
 
     def test_shared(self):
-        self.assertEqual(managers.managers['shared'], managers.RedisManager)
+        self.assertEqual(managers.managers['shared'], managers.SharedManager)

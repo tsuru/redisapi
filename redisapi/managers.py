@@ -91,7 +91,7 @@ class FakeManager(object):
         return self.ok, self.msg
 
 
-class RedisManager(object):
+class SharedManager(object):
     def __init__(self):
         self.server = get_value("REDIS_SERVER_HOST")
 
@@ -130,7 +130,7 @@ class RedisManager(object):
 
 
 managers = {
-    'shared': RedisManager,
+    'shared': SharedManager,
     'fake': FakeManager,
     'docker': DockerManager,
 }

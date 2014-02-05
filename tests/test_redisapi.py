@@ -22,9 +22,9 @@ class RedisAPITestCase(unittest.TestCase):
         self.app = api.app.test_client()
 
     def test_manager(self):
-        from redisapi.managers import RedisManager
+        from redisapi.managers import SharedManager
         from redisapi.api import manager
-        self.assertIsInstance(manager(), RedisManager)
+        self.assertIsInstance(manager(), SharedManager)
 
     def test_manager_fake_manager(self):
         os.environ["API_MANAGER"] = "fake"
