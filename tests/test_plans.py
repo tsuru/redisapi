@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 
 import unittest
+import os
 
 from redisapi import plans
 
@@ -19,3 +20,9 @@ class PlansTest(unittest.TestCase):
 HA and failover support via redis-sentinel."},
         ]
         self.assertListEqual(expected, plans.plans)
+
+    def test_active_plans(self):
+        os.environ["REDIS_API_PLANS"] = '["development", "plus"]'
+        result = [p["name"] for p in plans.active()]
+        expected = ["development", "plus"]
+        self.assertListEqual(expected, result)
