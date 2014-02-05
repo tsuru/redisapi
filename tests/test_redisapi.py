@@ -6,6 +6,8 @@ import json
 import unittest
 import os
 
+from redisapi import plans
+
 
 class RedisAPITestCase(unittest.TestCase):
 
@@ -60,3 +62,11 @@ class RedisAPITestCase(unittest.TestCase):
         content, code = api.status("myinstance")
         self.assertEqual(500, code)
         self.assertEqual("error", content)
+
+    def test_plans(self):
+        os.environ["REDIS_API_PLANS"] = '["development", "basic", "plus"]'
+        response = self.app.get("/resources/plans")
+        self.assertEqual(200, response.status_code)
+        data = json.loads(response.data)
+        expected = plans.plans
+        self.assertListEqual(expected, data)

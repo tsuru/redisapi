@@ -8,6 +8,7 @@ import os
 
 from flask import request
 from managers import managers
+from plans import active as active_plans
 
 
 app = flask.Flask(__name__)
@@ -48,3 +49,8 @@ def status(name):
     if ok:
         return msg, 204
     return msg, 500
+
+
+@app.route("/resources/plans", methods=["GET"])
+def plans():
+    return json.dumps(active_plans()), 200
