@@ -4,15 +4,7 @@
 
 import os
 
-
-def get_value(key):
-    try:
-        value = os.environ[key]
-    except KeyError:
-        msg = u"You must define the {} " \
-              "environment variable.".format(key)
-        raise Exception(msg)
-    return value
+from utils import get_value
 
 
 class FakeHealthCheck(object):
