@@ -42,7 +42,8 @@ def unbind(name, host):
 
 @app.route("/resources", methods=["POST"])
 def add_instance():
-    manager().add_instance(request.form['name'])
+    manager_by_plan_name(request.form['plan']).add_instance(
+        request.form['name'])
     return "", 201
 
 

@@ -5,10 +5,12 @@
 import json
 import unittest
 import os
+import mock
 
 from redisapi import plans
 from redisapi.api import manager_by_plan_name
-from redisapi.managers import SharedManager, DockerManager, DockerHaManager
+from redisapi.managers import (SharedManager, DockerManager,
+                               DockerHaManager, FakeManager)
 
 
 class RedisAPITestCase(unittest.TestCase):
@@ -44,14 +46,17 @@ class RedisAPITestCase(unittest.TestCase):
 
     def test_manager_fake_manager(self):
         os.environ["API_MANAGER"] = "fake"
-        from redisapi.managers import FakeManager
         from redisapi.api import manager
         self.assertIsInstance(manager(), FakeManager)
 
-    def test_add_instance(self):
-        response = self.app.post("/resources", data={"name": "name"})
+    @mock.patch("redisapi.api.manager_by_plan_name")
+    def test_add_instance(self, manager):
+        manager.return_value = FakeManager()
+        response = self.app.post("/resources",
+                                 data={"name": "name", "plan": "basic"})
         self.assertEqual(201, response.status_code)
         self.assertEqual("", response.data)
+        manager.assert_called_with('basic')
 
     def test_remove_instance(self):
         response = self.app.delete("/resources/myinstance")
