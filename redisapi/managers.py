@@ -11,6 +11,13 @@ from utils import get_value
 from storage import MongoStorage, Instance
 
 
+class DockerHaManager(object):
+
+    def health_checker(self):
+        hc_name = os.environ.get("HEALTH_CHECKER", "fake")
+        return health_checkers[hc_name]()
+
+
 class DockerManager(object):
     def __init__(self):
         self.server = get_value("REDIS_SERVER_HOST")
