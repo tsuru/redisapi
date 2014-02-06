@@ -8,7 +8,7 @@ import os
 
 from redisapi import plans
 from redisapi.api import manager_by_plan_name
-from redisapi.managers import SharedManager, DockerManager
+from redisapi.managers import SharedManager, DockerManager, DockerHaManager
 
 
 class RedisAPITestCase(unittest.TestCase):
@@ -32,6 +32,10 @@ class RedisAPITestCase(unittest.TestCase):
         os.environ["REDIS_IMAGE"] = ""
         manager = manager_by_plan_name("basic")
         self.assertIsInstance(manager, DockerManager)
+
+    def test_manager_by_plan_name_plus(self):
+        manager = manager_by_plan_name("plus")
+        self.assertIsInstance(manager, DockerHaManager)
 
     def test_manager(self):
         from redisapi.managers import SharedManager

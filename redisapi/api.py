@@ -7,7 +7,7 @@ import flask
 import os
 
 from flask import request
-from managers import managers, SharedManager, DockerManager
+from managers import managers, SharedManager, DockerManager, DockerHaManager
 from plans import active as active_plans
 
 
@@ -18,6 +18,7 @@ def manager_by_plan_name(plan_name):
     plans = {
         'development': SharedManager,
         'basic': DockerManager,
+        'plus': DockerHaManager,
     }
     return plans[plan_name]()
 
