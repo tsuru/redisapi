@@ -36,6 +36,7 @@ class DockerManager(object):
             container_id=output["Id"],
             host=self.server,
             port=port,
+            plan='dedicated',
         )
         self.storage.add_instance(instance)
         self.health_checker().add(self.server, port)

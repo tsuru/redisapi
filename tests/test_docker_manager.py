@@ -80,6 +80,7 @@ class DockerManagerTest(unittest.TestCase):
             container_id="12",
             port=123,
             host="host",
+            plan="dedicated",
         )
         self.manager.storage.add_instance(instance)
 
@@ -99,6 +100,7 @@ class DockerManagerTest(unittest.TestCase):
             container_id="12",
             host='localhost',
             port='4242',
+            plan='dedicated',
         )
         self.manager.storage.add_instance(instance)
         result = self.manager.bind(name="name")

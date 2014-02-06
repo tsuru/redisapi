@@ -7,18 +7,20 @@ import os
 
 class Instance(object):
 
-    def __init__(self, host, container_id, port, name):
+    def __init__(self, host, container_id, port, name, plan):
         self.host = host
         self.container_id = container_id
         self.port = port
         self.name = name
+        self.plan = plan
 
     def to_json(self):
         return {
             'host': self.host,
             'container_id': self.container_id,
             'port': self.port,
-            'name': self.name
+            'name': self.name,
+            'plan': self.plan,
         }
 
 
@@ -40,7 +42,8 @@ class MongoStorage(object):
             host=result['host'],
             container_id=result['container_id'],
             port=result['port'],
-            name=result['name']
+            name=result['name'],
+            plan=result['plan'],
         )
 
     def remove_instance(self, instance):
