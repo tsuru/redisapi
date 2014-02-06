@@ -14,6 +14,15 @@ from plans import active as active_plans
 app = flask.Flask(__name__)
 
 
+def manager_by_instance(instance):
+    plans = {
+        'development': SharedManager,
+        'basic': DockerManager,
+        'plus': DockerHaManager,
+    }
+    return plans[instance.plan]()
+
+
 def manager_by_plan_name(plan_name):
     plans = {
         'development': SharedManager,

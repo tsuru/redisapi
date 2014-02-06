@@ -8,7 +8,8 @@ import os
 import mock
 
 from redisapi import plans
-from redisapi.api import manager_by_plan_name
+from redisapi.api import manager_by_plan_name, manager_by_instance
+from redisapi.storage import Instance
 from redisapi.managers import (SharedManager, DockerManager,
                                DockerHaManager, FakeManager)
 
@@ -37,6 +38,17 @@ class RedisAPITestCase(unittest.TestCase):
 
     def test_manager_by_plan_name_plus(self):
         manager = manager_by_plan_name("plus")
+        self.assertIsInstance(manager, DockerHaManager)
+
+    def test_manager_by_instance(self):
+        instance = Instance(
+            host='host',
+            container_id='id',
+            name='name',
+            port='port',
+            plan='plus',
+        )
+        manager = manager_by_instance(instance)
         self.assertIsInstance(manager, DockerHaManager)
 
     def test_manager(self):
