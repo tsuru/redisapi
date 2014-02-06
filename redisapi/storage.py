@@ -36,3 +36,7 @@ class MongoStorage(object):
 
     def find_instance_by_name(self, name):
         return self.conn()['redisapi']['instances'].find_one({"name": name})
+
+    def remove_instance(self, instance):
+        return self.conn()['redisapi']['instances'].remove(
+            {"name": instance.name})
