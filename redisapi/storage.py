@@ -10,3 +10,11 @@ class Instance(object):
         self.container_id = container_id
         self.port = port
         self.name = name
+
+    def to_json(self):
+        return {
+            'host': self.host,
+            'container_id': self.container_id,
+            'port': self.port,
+            'name': self.name
+        }

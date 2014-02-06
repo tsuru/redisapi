@@ -24,3 +24,22 @@ class InstanceTest(unittest.TestCase):
         self.assertEqual(instance.container_id, id)
         self.assertEqual(instance.name, name)
         self.assertEqual(instance.port, port)
+
+    def test_to_json(self):
+        host = "host"
+        id = "id"
+        name = "name"
+        port = "port"
+        instance = Instance(
+            host=host,
+            container_id=id,
+            name=name,
+            port=port,
+        )
+        expected = {
+            'host': host,
+            'name': name,
+            'port': port,
+            'container_id': id,
+        }
+        self.assertDictEqual(instance.to_json(), expected)
