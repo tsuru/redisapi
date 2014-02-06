@@ -84,8 +84,7 @@ class MongoStorageTest(unittest.TestCase):
         storage = MongoStorage()
         instance = Instance("host", "id", "port", "xname")
         storage.add_instance(instance)
-        result = storage.conn()['redisapi']['instances'].find_one(
-            {"name": instance.name})
+        result = storage.find_instance_by_name(instance.name)
         self.assertEqual(instance.container_id, result["container_id"])
         storage.conn()['redisapi']['instances'].remove({"name": instance.name})
 
