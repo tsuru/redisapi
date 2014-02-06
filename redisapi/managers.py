@@ -8,6 +8,7 @@ import docker
 
 from hc import health_checkers
 from utils import get_value
+from storage import MongoStorage, Instance
 
 
 class DockerManager(object):
@@ -19,14 +20,7 @@ class DockerManager(object):
             base_url='unix://var/run/docker.sock'
         )
 
-        self.instances = self.mongo()['redisapi']['instances']
-
-    def mongo(self):
-        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
-        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
-
-        from pymongo import MongoClient
-        return MongoClient(host=mongodb_host, port=mongodb_port)
+        self.storage = MongoStorage()
 
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
@@ -37,31 +31,31 @@ class DockerManager(object):
         self.client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
         container = self.client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
-        instance = {
-            'name': instance_name,
-            'container_id': output["Id"],
-            'host': self.server,
-            'port': port,
-        }
-        self.instances.insert(instance)
+        instance = Instance(
+            name=instance_name,
+            container_id=output["Id"],
+            host=self.server,
+            port=port,
+        )
+        self.storage.add_instance(instance)
         self.health_checker().add(self.server, port)
 
     def bind(self, name):
-        instance = self.instances.find_one({"name": name})
+        instance = self.storage.find_instance_by_name(name)
         return {
-            "REDIS_HOST": instance["host"],
-            "REDIS_PORT": instance["port"],
+            "REDIS_HOST": instance.host,
+            "REDIS_PORT": instance.port,
         }
 
     def unbind(self):
         pass
 
     def remove_instance(self, name):
-        instance = self.instances.find_one({"name": name})
-        self.client.stop(instance["container_id"])
-        self.client.remove_container(instance["container_id"])
-        self.health_checker().remove(self.server, instance["port"])
-        self.instances.remove({"name": name})
+        instance = self.storage.find_instance_by_name(name)
+        self.client.stop(instance.container_id)
+        self.client.remove_container(instance.container_id)
+        self.health_checker().remove(self.server, instance.port)
+        self.storage.remove_instance(instance)
 
     def is_ok(self):
         pass

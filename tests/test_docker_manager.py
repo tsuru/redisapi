@@ -6,6 +6,8 @@ import unittest
 import mock
 import os
 
+from redisapi.storage import Instance
+
 
 class DockerManagerTest(unittest.TestCase):
 
@@ -24,7 +26,7 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.health_checker = mock.Mock()
 
     def tearDown(self):
-        self.manager.instances.remove()
+        self.manager.storage.conn()['redisapi']['instances'].remove()
 
     def test_hc(self):
         from redisapi.hc import FakeHealthCheck
@@ -64,42 +66,44 @@ class DockerManagerTest(unittest.TestCase):
             port_bindings={6379: ('0.0.0.0',)}
         )
         add_mock.add.assert_called_with("localhost", u"49154")
-        instance = self.manager.instances.find_one({"name": "name"})
-        self.assertEqual(instance["name"], "name")
-        self.assertEqual(instance["container_id"], "12")
-        self.assertEqual(instance["host"], "localhost")
-        self.assertEqual(instance["port"], u"49154")
+        instance = self.manager.storage.find_instance_by_name("name")
+        self.assertEqual(instance.name, "name")
+        self.assertEqual(instance.container_id, "12")
+        self.assertEqual(instance.host, "localhost")
+        self.assertEqual(instance.port, u"49154")
 
     def test_remove_instance(self):
         remove_mock = mock.Mock()
         self.manager.health_checker.return_value = remove_mock
-        instance = {
-            'name': "name",
-            'container_id': "12",
-            'port': 123,
-        }
-        self.manager.instances.insert(instance)
+        instance = Instance(
+            name="name",
+            container_id="12",
+            port=123,
+            host="host",
+        )
+        self.manager.storage.add_instance(instance)
 
         self.manager.remove_instance("name")
 
         remove_mock.remove.assert_called_with("localhost", 123)
-        self.manager.client.stop.assert_called_with(instance["container_id"])
+        self.manager.client.stop.assert_called_with(instance.container_id)
         self.manager.client.remove_container.assert_called(
-            instance["container_id"])
-        lenght = self.manager.instances.find({"name": "name"}).count()
-        self.assertEqual(lenght, 0)
+            instance.container_id)
+        length = self.manager.storage.conn()['redisapi']['instances'].find(
+            {"name": "name"}).count()
+        self.assertEqual(length, 0)
 
     def test_bind(self):
-        instance = {
-            'name': "name",
-            'container_id': "12",
-            'host': 'localhost',
-            'port': '4242',
-        }
-        self.manager.instances.insert(instance)
+        instance = Instance(
+            name="name",
+            container_id="12",
+            host='localhost',
+            port='4242',
+        )
+        self.manager.storage.add_instance(instance)
         result = self.manager.bind(name="name")
-        self.assertEqual(result['REDIS_HOST'], instance['host'])
-        self.assertEqual(result['REDIS_PORT'], instance['port'])
+        self.assertEqual(result['REDIS_HOST'], instance.host)
+        self.assertEqual(result['REDIS_PORT'], instance.port)
 
     def test_running_without_the_REDIS_SERVER_HOST_variable(self):
         del os.environ["REDIS_SERVER_HOST"]
@@ -122,27 +126,3 @@ class DockerManagerTest(unittest.TestCase):
             (u"You must define the REDIS_IMAGE environment variable.",),
             exc.args,
         )
-
-    @mock.patch("pymongo.MongoClient")
-    def test_mongodb_host_environ(self, mongo_mock):
-        from redisapi.managers import DockerManager
-        DockerManager()
-        mongo_mock.assert_called_with(host="localhost", port=27017)
-
-        os.environ["MONGODB_HOST"] = "0.0.0.0"
-        self.addCleanup(self.remove_env, "MONGODB_HOST")
-        from redisapi.managers import DockerManager
-        DockerManager()
-        mongo_mock.assert_called_with(host="0.0.0.0", port=27017)
-
-    @mock.patch("pymongo.MongoClient")
-    def test_mongodb_port_environ(self, mongo_mock):
-        from redisapi.managers import DockerManager
-        DockerManager()
-        mongo_mock.assert_called_with(host='localhost', port=27017)
-
-        os.environ["MONGODB_PORT"] = "3333"
-        self.addCleanup(self.remove_env, "MONGODB_PORT")
-        from redisapi.managers import DockerManager
-        DockerManager()
-        mongo_mock.assert_called_with(host='localhost', port=3333)

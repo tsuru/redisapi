@@ -35,7 +35,13 @@ class MongoStorage(object):
         self.conn()['redisapi']['instances'].insert(instance.to_json())
 
     def find_instance_by_name(self, name):
-        return self.conn()['redisapi']['instances'].find_one({"name": name})
+        result = self.conn()['redisapi']['instances'].find_one({"name": name})
+        return Instance(
+            host=result['host'],
+            container_id=result['container_id'],
+            port=result['port'],
+            name=result['name']
+        )
 
     def remove_instance(self, instance):
         return self.conn()['redisapi']['instances'].remove(
