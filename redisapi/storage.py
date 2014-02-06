@@ -33,3 +33,6 @@ class MongoStorage(object):
 
     def add_instance(self, instance):
         self.conn()['redisapi']['instances'].insert(instance.to_json())
+
+    def find_instance_by_name(self, name):
+        return self.conn()['redisapi']['instances'].find_one({"name": name})

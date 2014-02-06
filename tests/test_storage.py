@@ -88,3 +88,12 @@ class MongoStorageTest(unittest.TestCase):
             {"name": instance.name})
         self.assertEqual(instance.container_id, result["container_id"])
         storage.conn()['redisapi']['instances'].remove({"name": instance.name})
+
+    def test_find_instance_by_name(self):
+        from redisapi.storage import MongoStorage
+        storage = MongoStorage()
+        instance = Instance("host", "id", "port", "xname")
+        storage.add_instance(instance)
+        result = storage.find_instance_by_name(instance.name)
+        self.assertEqual(instance.container_id, result["container_id"])
+        storage.conn()['redisapi']['instances'].remove({"name": instance.name})
