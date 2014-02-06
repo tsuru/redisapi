@@ -30,3 +30,6 @@ class MongoStorage(object):
 
         from pymongo import MongoClient
         return MongoClient(host=mongodb_host, port=mongodb_port)
+
+    def add_instance(self, instance):
+        self.conn()['redisapi']['instances'].insert(instance.to_json())

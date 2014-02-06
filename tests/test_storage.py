@@ -78,3 +78,13 @@ class MongoStorageTest(unittest.TestCase):
         storage = MongoStorage()
         storage.conn()
         mongo_mock.assert_called_with(host='localhost', port=3333)
+
+    def test_add_instance(self):
+        from redisapi.storage import MongoStorage
+        storage = MongoStorage()
+        instance = Instance("host", "id", "port", "xname")
+        storage.add_instance(instance)
+        result = storage.conn()['redisapi']['instances'].find_one(
+            {"name": instance.name})
+        self.assertEqual(instance.container_id, result["container_id"])
+        storage.conn()['redisapi']['instances'].remove({"name": instance.name})
