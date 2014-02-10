@@ -84,15 +84,12 @@ class DockerManagerTest(unittest.TestCase):
         )
         self.manager.storage.add_instance(instance)
 
-        self.manager.remove_instance("name")
-
+        self.manager.remove_instance(instance)
         remove_mock.remove.assert_called_with("localhost", 123)
         self.manager.client.stop.assert_called_with(instance.container_id)
         self.manager.client.remove_container.assert_called(
             instance.container_id)
-        length = self.manager.storage.conn()['redisapi']['instances'].find(
-            {"name": "name"}).count()
-        self.assertEqual(length, 0)
+        self.manager.storage.remove_instance(instance)
 
     def test_bind(self):
         instance = Instance(

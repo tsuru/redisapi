@@ -58,12 +58,10 @@ class DockerManager(object):
     def unbind(self):
         pass
 
-    def remove_instance(self, name):
-        instance = self.storage.find_instance_by_name(name)
+    def remove_instance(self, instance):
         self.client.stop(instance.container_id)
         self.client.remove_container(instance.container_id)
         self.health_checker().remove(self.server, instance.port)
-        self.storage.remove_instance(instance)
 
     def is_ok(self):
         pass
