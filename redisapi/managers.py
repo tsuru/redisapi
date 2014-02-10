@@ -45,8 +45,8 @@ class DockerManager(object):
             port=port,
             plan='dedicated',
         )
-        self.storage.add_instance(instance)
         self.health_checker().add(self.server, port)
+        return instance
 
     def bind(self, name):
         instance = self.storage.find_instance_by_name(name)

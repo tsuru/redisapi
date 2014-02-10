@@ -56,7 +56,7 @@ class DockerManagerTest(unittest.TestCase):
             'NetworkSettings': {
                 u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
 
-        self.manager.add_instance("name")
+        instance = self.manager.add_instance("name")
 
         self.manager.client.create_container.assert_called_with(
             self.manager.image_name,
@@ -67,7 +67,6 @@ class DockerManagerTest(unittest.TestCase):
             port_bindings={6379: ('0.0.0.0',)}
         )
         add_mock.add.assert_called_with("localhost", u"49154")
-        instance = self.manager.storage.find_instance_by_name("name")
         self.assertEqual(instance.name, "name")
         self.assertEqual(instance.container_id, "12")
         self.assertEqual(instance.host, "localhost")
