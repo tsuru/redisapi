@@ -99,8 +99,7 @@ class DockerManagerTest(unittest.TestCase):
             port='4242',
             plan='dedicated',
         )
-        self.manager.storage.add_instance(instance)
-        result = self.manager.bind(name="name")
+        result = self.manager.bind(instance)
         self.assertEqual(result['REDIS_HOST'], instance.host)
         self.assertEqual(result['REDIS_PORT'], instance.port)
 

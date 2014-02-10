@@ -48,8 +48,7 @@ class DockerManager(object):
         self.health_checker().add(self.server, port)
         return instance
 
-    def bind(self, name):
-        instance = self.storage.find_instance_by_name(name)
+    def bind(self, instance):
         return {
             "REDIS_HOST": instance.host,
             "REDIS_PORT": instance.port,
