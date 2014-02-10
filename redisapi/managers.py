@@ -77,13 +77,13 @@ class FakeManager(object):
     def add_instance(self, name):
         self.instance_added = True
 
-    def bind(self, name):
+    def bind(self, instance):
         self.binded = True
 
     def unbind(self):
         self.unbinded = True
 
-    def remove_instance(self, name):
+    def remove_instance(self, instance):
         self.removed = True
 
     def is_ok(self):
