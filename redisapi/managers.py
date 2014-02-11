@@ -23,20 +23,19 @@ class DockerManager(object):
         self.server = get_value("REDIS_SERVER_HOST")
         self.image_name = get_value("REDIS_IMAGE")
 
-        self.client = docker.Client(
-            base_url='unix://var/run/docker.sock'
-        )
-
         self.storage = MongoStorage()
+
+    def client(self):
+        return docker.Client(base_url='unix://var/run/docker.sock')
 
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
 
     def add_instance(self, instance_name):
-        output = self.client.create_container(self.image_name, command="")
-        self.client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
-        container = self.client.inspect_container(output["Id"])
+        output = self.client().create_container(self.image_name, command="")
+        self.client().start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
+        container = self.client().inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         instance = Instance(
             name=instance_name,
@@ -58,8 +57,8 @@ class DockerManager(object):
         pass
 
     def remove_instance(self, instance):
-        self.client.stop(instance.container_id)
-        self.client.remove_container(instance.container_id)
+        self.client().stop(instance.container_id)
+        self.client().remove_container(instance.container_id)
         self.health_checker().remove(self.server, instance.port)
 
     def is_ok(self):

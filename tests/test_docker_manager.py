@@ -22,7 +22,9 @@ class DockerManagerTest(unittest.TestCase):
         self.addCleanup(self.remove_env, "REDIS_IMAGE")
         from redisapi.managers import DockerManager
         self.manager = DockerManager()
-        self.manager.client = mock.Mock()
+        client_mock = mock.Mock()
+        client_mock.return_value = mock.Mock()
+        self.manager.client = client_mock
         self.manager.health_checker = mock.Mock()
 
     def tearDown(self):
@@ -51,18 +53,18 @@ class DockerManagerTest(unittest.TestCase):
     def test_add_instance(self):
         add_mock = mock.Mock()
         self.manager.health_checker.return_value = add_mock
-        self.manager.client.create_container.return_value = {"Id": "12"}
-        self.manager.client.inspect_container.return_value = {
+        self.manager.client().create_container.return_value = {"Id": "12"}
+        self.manager.client().inspect_container.return_value = {
             'NetworkSettings': {
                 u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
 
         instance = self.manager.add_instance("name")
 
-        self.manager.client.create_container.assert_called_with(
+        self.manager.client().create_container.assert_called_with(
             self.manager.image_name,
             command="",
         )
-        self.manager.client.start.assert_called_with(
+        self.manager.client().start.assert_called_with(
             "12",
             port_bindings={6379: ('0.0.0.0',)}
         )
@@ -87,8 +89,8 @@ class DockerManagerTest(unittest.TestCase):
 
         self.manager.remove_instance(instance)
         remove_mock.remove.assert_called_with("localhost", 123)
-        self.manager.client.stop.assert_called_with(instance.container_id)
-        self.manager.client.remove_container.assert_called(
+        self.manager.client().stop.assert_called_with(instance.container_id)
+        self.manager.client().remove_container.assert_called(
             instance.container_id)
         self.manager.storage.remove_instance(instance)
 
