@@ -71,6 +71,7 @@ class DockerManagerTest(unittest.TestCase):
         self.assertEqual(instance.container_id, "12")
         self.assertEqual(instance.host, "localhost")
         self.assertEqual(instance.port, u"49154")
+        self.assertEqual(instance.plan, "basic")
 
     def test_remove_instance(self):
         remove_mock = mock.Mock()
@@ -80,7 +81,7 @@ class DockerManagerTest(unittest.TestCase):
             container_id="12",
             port=123,
             host="host",
-            plan="dedicated",
+            plan="basic",
         )
         self.manager.storage.add_instance(instance)
 
@@ -97,7 +98,7 @@ class DockerManagerTest(unittest.TestCase):
             container_id="12",
             host='localhost',
             port='4242',
-            plan='dedicated',
+            plan='basic',
         )
         result = self.manager.bind(instance)
         self.assertEqual(result['REDIS_HOST'], instance.host)

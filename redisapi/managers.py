@@ -43,7 +43,7 @@ class DockerManager(object):
             container_id=output["Id"],
             host=self.server,
             port=port,
-            plan='dedicated',
+            plan='basic',
         )
         self.health_checker().add(self.server, port)
         return instance
