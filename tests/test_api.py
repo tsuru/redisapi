@@ -10,8 +10,7 @@ import mock
 from redisapi import plans
 from redisapi.api import manager_by_plan_name, manager_by_instance
 from redisapi.storage import Instance, MongoStorage
-from redisapi.managers import (SharedManager, DockerManager,
-                               DockerHaManager, FakeManager)
+from redisapi.managers import SharedManager, DockerManager, DockerHaManager
 
 
 class RedisAPITestCase(unittest.TestCase):
@@ -50,16 +49,6 @@ class RedisAPITestCase(unittest.TestCase):
         )
         manager = manager_by_instance(instance)
         self.assertIsInstance(manager, DockerHaManager)
-
-    def test_manager(self):
-        from redisapi.managers import SharedManager
-        from redisapi.api import manager
-        self.assertIsInstance(manager(), SharedManager)
-
-    def test_manager_fake_manager(self):
-        os.environ["API_MANAGER"] = "fake"
-        from redisapi.api import manager
-        self.assertIsInstance(manager(), FakeManager)
 
     @mock.patch("redisapi.api.manager_by_plan_name")
     @mock.patch("redisapi.storage.MongoStorage")

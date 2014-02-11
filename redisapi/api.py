@@ -4,10 +4,9 @@
 
 import json
 import flask
-import os
 
 from flask import request
-from managers import managers, SharedManager, DockerManager, DockerHaManager
+from managers import SharedManager, DockerManager, DockerHaManager, FakeManager
 from plans import active as active_plans
 from storage import MongoStorage
 
@@ -33,11 +32,6 @@ def manager_by_plan_name(plan_name):
     return plans[plan_name]()
 
 
-def manager():
-    manager_name = os.environ.get("API_MANAGER", "shared")
-    return managers[manager_name]()
-
-
 @app.route("/resources/<name>", methods=["POST"])
 def bind(name):
     storage = MongoStorage()
@@ -48,7 +42,6 @@ def bind(name):
 
 @app.route("/resources/<name>/hostname/<host>", methods=["DELETE"])
 def unbind(name, host):
-    from managers import FakeManager
     FakeManager().unbind()
     return "", 200
 
