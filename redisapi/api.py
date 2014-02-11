@@ -48,7 +48,8 @@ def bind(name):
 
 @app.route("/resources/<name>/hostname/<host>", methods=["DELETE"])
 def unbind(name, host):
-    manager().unbind()
+    from managers import FakeManager
+    FakeManager().unbind()
     return "", 200
 
 
