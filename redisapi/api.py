@@ -9,6 +9,7 @@ import os
 from flask import request
 from managers import managers, SharedManager, DockerManager, DockerHaManager
 from plans import active as active_plans
+from storage import MongoStorage
 
 
 app = flask.Flask(__name__)
@@ -39,7 +40,9 @@ def manager():
 
 @app.route("/resources/<name>", methods=["POST"])
 def bind(name):
-    result = manager().bind(name)
+    storage = MongoStorage()
+    instance = storage.find_instance_by_name(name)
+    result = manager_by_instance(instance).bind(instance)
     return json.dumps(result), 201
 
 

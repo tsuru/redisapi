@@ -9,7 +9,7 @@ import mock
 
 from redisapi import plans
 from redisapi.api import manager_by_plan_name, manager_by_instance
-from redisapi.storage import Instance
+from redisapi.storage import Instance, MongoStorage
 from redisapi.managers import (SharedManager, DockerManager,
                                DockerHaManager, FakeManager)
 
@@ -76,13 +76,23 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual("", response.data)
 
     def test_bind(self):
+        storage = MongoStorage()
+        instance = Instance(
+            host='host',
+            container_id='id',
+            name='myinstance',
+            port='port',
+            plan='development',
+        )
+        storage.add_instance(instance)
         response = self.app.post(
             "/resources/myinstance",
             data={"hostname": "something.tsuru.io"}
         )
         self.assertEqual(201, response.status_code)
         j = json.loads(response.data)
-        self.assertEqual({"REDIS_HOST": "localhost", "REDIS_PORT": "6379"}, j)
+        self.assertEqual({"REDIS_HOST": instance.host,
+                          "REDIS_PORT": instance.port}, j)
 
     def test_unbind(self):
         from redisapi import api

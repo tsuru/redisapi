@@ -94,25 +94,27 @@ class SharedManager(object):
     def __init__(self):
         self.server = get_value("REDIS_SERVER_HOST")
 
-    def add_instance(self, name):
-        pass
-
-    def bind(self, name):
+    def add_instance(self, instance_name):
         host = os.environ.get("REDIS_PUBLIC_HOST", self.server)
         port = os.environ.get("REDIS_SERVER_PORT", "6379")
-        result = {
-            "REDIS_HOST": host,
-            "REDIS_PORT": port,
+        return Instance(
+            name=instance_name,
+            host=host,
+            port=port,
+            plan='development',
+            container_id='',
+        )
+
+    def bind(self, instance):
+        return {
+            "REDIS_HOST": instance.host,
+            "REDIS_PORT": instance.port,
         }
-        pswd = os.environ.get("REDIS_SERVER_PASSWORD")
-        if pswd:
-            result["REDIS_PASSWORD"] = pswd
-        return result
 
     def unbind(self):
         pass
 
-    def remove_instance(self, name):
+    def remove_instance(self, instance):
         pass
 
     def is_ok(self):

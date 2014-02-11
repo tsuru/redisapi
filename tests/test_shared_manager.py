@@ -7,6 +7,7 @@ import os
 import mock
 
 from redis import exceptions
+from redisapi.storage import Instance
 
 
 class FakeConnection(object):
@@ -37,40 +38,46 @@ class SharedManagerTest(unittest.TestCase):
         self.manager = SharedManager()
 
     def test_bind_returns_the_server_host_and_port(self):
-        envs = self.manager.bind("")
+        instance = Instance(
+            name='ble',
+            host='localhost',
+            port='6379',
+            plan='development',
+            container_id='',
+        )
+        envs = self.manager.bind(instance)
         self.assertEqual(
             {"REDIS_HOST": "localhost", "REDIS_PORT": "6379"},
             envs
         )
 
-    def test_bind_returns_the_REDIS_PUBLIC_HOST_when_its_defined(self):
+    def test_add_instance(self):
+        instance = self.manager.add_instance("ble")
+        self.assertEqual(instance.name, 'ble')
+        self.assertEqual(instance.host, 'localhost')
+        self.assertEqual(instance.port, '6379')
+        self.assertEqual(instance.plan, 'development')
+        self.assertEqual(instance.container_id, '')
+
+    def test_add_instance_returns_the_REDIS_PUBLIC_HOST_when_its_defined(self):
         os.environ["REDIS_PUBLIC_HOST"] = "redis.tsuru.io"
         self.addCleanup(self.remove_env, "REDIS_PUBLIC_HOST")
-        envs = self.manager.bind("")
-        want = {
-            "REDIS_HOST": "redis.tsuru.io",
-            "REDIS_PORT": "6379",
-        }
-        self.assertEqual(want, envs)
+        instance = self.manager.add_instance('ble')
+        self.assertEqual(instance.port, "6379")
+        self.assertEqual(instance.host, "redis.tsuru.io")
 
     def test_bind_returns_the_REDIS_SERVER_PORT_when_its_defined(self):
-        os.environ["REDIS_SERVER_PORT"] = "12345"
-        self.addCleanup(self.remove_env, "REDIS_SERVER_PORT")
-        envs = self.manager.bind("")
+        instance = Instance(
+            name='ble',
+            host='localhost',
+            port='12345',
+            plan='development',
+            container_id='',
+        )
+        envs = self.manager.bind(instance)
         want = {
             "REDIS_HOST": "localhost",
             "REDIS_PORT": "12345",
-        }
-        self.assertEqual(want, envs)
-
-    def test_bind_returns_the_password_when_its_defined(self):
-        os.environ["REDIS_SERVER_PASSWORD"] = "s3cr3t"
-        self.addCleanup(self.remove_env, "REDIS_SERVER_PASSWORD")
-        envs = self.manager.bind("")
-        want = {
-            "REDIS_HOST": "localhost",
-            "REDIS_PORT": "6379",
-            "REDIS_PASSWORD": "s3cr3t",
         }
         self.assertEqual(want, envs)
 
