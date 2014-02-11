@@ -62,13 +62,21 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertIsInstance(manager(), FakeManager)
 
     @mock.patch("redisapi.api.manager_by_plan_name")
-    def test_add_instance(self, manager):
-        manager.return_value = FakeManager()
+    @mock.patch("redisapi.storage.MongoStorage")
+    def test_add_instance(self, mongo_mock, manager):
+        storage_mock = mongo_mock.return_value
+        fake_mock = mock.Mock()
+        fake_instance = mock.Mock()
+        fake_mock.add_instance.return_value = fake_instance
+        manager.return_value = fake_mock
+
         response = self.app.post("/resources",
                                  data={"name": "name", "plan": "basic"})
+
         self.assertEqual(201, response.status_code)
         self.assertEqual("", response.data)
         manager.assert_called_with('basic')
+        storage_mock.add_instance.assert_called_with(fake_instance)
 
     @mock.patch("redisapi.api.manager_by_instance")
     @mock.patch("redisapi.storage.MongoStorage")
@@ -76,7 +84,9 @@ class RedisAPITestCase(unittest.TestCase):
         storage_mock = mongo_mock.return_value
         instance_mock = mock.Mock()
         storage_mock.find_instance_by_name.return_value = instance_mock
+
         response = self.app.delete("/resources/myinstance")
+
         self.assertEqual(200, response.status_code)
         self.assertEqual("", response.data)
         storage_mock.remove_instance.assert_called_with(instance_mock)
