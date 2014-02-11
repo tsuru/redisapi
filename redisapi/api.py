@@ -61,7 +61,11 @@ def add_instance():
 
 @app.route("/resources/<name>", methods=["DELETE"])
 def remove_instance(name):
-    manager().remove_instance(name)
+    from storage import MongoStorage
+    storage = MongoStorage()
+    instance = storage.find_instance_by_name(name)
+    manager_by_instance(instance).remove_instance(instance)
+    storage.remove_instance(instance)
     return "", 200
 
 

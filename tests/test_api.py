@@ -70,10 +70,16 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual("", response.data)
         manager.assert_called_with('basic')
 
-    def test_remove_instance(self):
+    @mock.patch("redisapi.api.manager_by_instance")
+    @mock.patch("redisapi.storage.MongoStorage")
+    def test_remove_instance(self, mongo_mock, manager_mock):
+        storage_mock = mongo_mock.return_value
+        xpto = mock.Mock()
+        storage_mock.find_instance_by_name.return_value = xpto
         response = self.app.delete("/resources/myinstance")
         self.assertEqual(200, response.status_code)
         self.assertEqual("", response.data)
+        storage_mock.remove_instance.assert_called_with(xpto)
 
     def test_bind(self):
         storage = MongoStorage()
