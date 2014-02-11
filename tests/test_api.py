@@ -30,6 +30,7 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertIsInstance(manager, SharedManager)
 
     def test_manager_by_plan_name_basic(self):
+        os.environ["DOCKER_HOSTS"] = "[]"
         os.environ["REDIS_SERVER_HOST"] = ""
         os.environ["REDIS_IMAGE"] = ""
         manager = manager_by_plan_name("basic")

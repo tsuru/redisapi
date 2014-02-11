@@ -20,6 +20,9 @@ class DockerManagerTest(unittest.TestCase):
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         os.environ["REDIS_IMAGE"] = "redisapi"
         self.addCleanup(self.remove_env, "REDIS_IMAGE")
+        os.environ["DOCKER_HOSTS"] = '["http://host1.com:4243", \
+            "http://localhost:4243"]'
+        self.addCleanup(self.remove_env, "DOCKER_HOSTS")
         from redisapi.managers import DockerManager
         self.manager = DockerManager()
         client_mock = mock.Mock()
@@ -35,6 +38,10 @@ class DockerManagerTest(unittest.TestCase):
         from redisapi.managers import DockerManager
         manager = DockerManager()
         self.assertIsInstance(manager.health_checker(), FakeHealthCheck)
+
+    def test_docker_hosts(self):
+        hosts = ["http://host1.com:4243", "http://localhost:4243"]
+        self.assertListEqual(self.manager.docker_hosts, hosts)
 
     @mock.patch("pyzabbix.ZabbixAPI")
     def test_hc_zabbix(self, zabix_mock):

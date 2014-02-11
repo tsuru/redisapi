@@ -3,6 +3,7 @@
 # license that can be found in the LICENSE file.
 
 import os
+import json
 import redis
 import docker
 
@@ -22,6 +23,8 @@ class DockerManager(object):
     def __init__(self):
         self.server = get_value("REDIS_SERVER_HOST")
         self.image_name = get_value("REDIS_IMAGE")
+        docker_hosts = get_value("DOCKER_HOSTS")
+        self.docker_hosts = json.loads(docker_hosts)
 
         self.storage = MongoStorage()
 
