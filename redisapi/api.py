@@ -75,7 +75,10 @@ def remove_instance(name):
 
 @app.route("/resources/<name>/status", methods=["GET"])
 def status(name):
-    ok, msg = manager().is_ok()
+    from storage import MongoStorage
+    storage = MongoStorage()
+    instance = storage.find_instance_by_name(name)
+    ok, msg = manager_by_instance(instance).is_ok()
     if ok:
         return msg, 204
     return msg, 500

@@ -116,7 +116,11 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual(200, code)
         self.assertEqual("", content)
 
-    def test_status(self):
+    @mock.patch("redisapi.api.manager_by_instance")
+    def test_status(self, manager_mock):
+        fake_manager = mock.Mock()
+        fake_manager.is_ok.return_value = False, "error"
+        manager_mock.return_value = fake_manager
         from redisapi import api
         content, code = api.status("myinstance")
         self.assertEqual(500, code)
