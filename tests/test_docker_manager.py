@@ -47,7 +47,7 @@ class DockerManagerTest(unittest.TestCase):
         from redisapi.managers import DockerManager
         manager = DockerManager()
         url = manager.extract_hostname("http://host.com:4243")
-        self.assertEqual(url, "http://host.com")
+        self.assertEqual(url, "host.com")
 
     def test_client_with_value(self):
         from redisapi.managers import DockerManager
@@ -83,6 +83,7 @@ class DockerManagerTest(unittest.TestCase):
     def test_add_instance(self):
         add_mock = mock.Mock()
         self.manager.health_checker.return_value = add_mock
+        self.manager.client = mock.Mock(base_url="http://localhost:4243")
         self.manager.client().create_container.return_value = {"Id": "12"}
         self.manager.client().inspect_container.return_value = {
             'NetworkSettings': {

@@ -40,8 +40,7 @@ class DockerManager(object):
         return health_checkers[hc_name]()
 
     def extract_hostname(self, url):
-        url_parsed = urlparse(url)
-        return "{}://{}".format(url_parsed.scheme, url_parsed.hostname)
+        return urlparse(url).hostname
 
     def add_instance(self, instance_name):
         client = self.client()
@@ -52,7 +51,7 @@ class DockerManager(object):
         instance = Instance(
             name=instance_name,
             container_id=output["Id"],
-            host=self.server,
+            host=self.extract_hostname(self.client.base_url),
             port=port,
             plan='basic',
         )
