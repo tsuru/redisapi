@@ -125,7 +125,7 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.storage.add_instance(instance)
 
         self.manager.remove_instance(instance)
-        remove_mock.remove.assert_called_with("localhost", 123)
+        remove_mock.remove.assert_called_with("host", 123)
         self.manager.client.assert_called_with("http://host:4243")
         self.manager.client().stop.assert_called_with(instance.container_id)
         self.manager.client().remove_container.assert_called(
@@ -143,17 +143,6 @@ class DockerManagerTest(unittest.TestCase):
         result = self.manager.bind(instance)
         self.assertEqual(result['REDIS_HOST'], instance.host)
         self.assertEqual(result['REDIS_PORT'], instance.port)
-
-    def test_running_without_the_REDIS_SERVER_HOST_variable(self):
-        del os.environ["REDIS_SERVER_HOST"]
-        with self.assertRaises(Exception) as cm:
-            from redisapi.managers import DockerManager
-            DockerManager()
-        exc = cm.exception
-        self.assertEqual(
-            (u"You must define the REDIS_SERVER_HOST environment variable.",),
-            exc.args,
-        )
 
     def test_running_without_the_REDIS_IMAGE_variable(self):
         del os.environ["REDIS_IMAGE"]

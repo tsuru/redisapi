@@ -23,7 +23,6 @@ class DockerHaManager(object):
 
 class DockerManager(object):
     def __init__(self):
-        self.server = get_value("REDIS_SERVER_HOST")
         self.image_name = get_value("REDIS_IMAGE")
         docker_hosts = get_value("DOCKER_HOSTS")
         self.docker_hosts = json.loads(docker_hosts)
@@ -51,14 +50,15 @@ class DockerManager(object):
         client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
         container = client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
+        host = self.extract_hostname(self.client.base_url)
         instance = Instance(
             name=instance_name,
             container_id=output["Id"],
-            host=self.extract_hostname(self.client.base_url),
+            host=host,
             port=port,
             plan='basic',
         )
-        self.health_checker().add(self.server, port)
+        self.health_checker().add(host, port)
         return instance
 
     def bind(self, instance):
@@ -75,7 +75,7 @@ class DockerManager(object):
         client = self.client(url)
         client.stop(instance.container_id)
         client.remove_container(instance.container_id)
-        self.health_checker().remove(self.server, instance.port)
+        self.health_checker().remove(instance.host, instance.port)
 
     def is_ok(self):
         pass
