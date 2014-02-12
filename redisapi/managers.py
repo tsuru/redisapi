@@ -8,6 +8,7 @@ import redis
 import docker
 import random
 
+from urlparse import urlparse
 from hc import health_checkers
 from utils import get_value
 from storage import MongoStorage, Instance
@@ -37,6 +38,10 @@ class DockerManager(object):
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
+
+    def extract_hostname(self, url):
+        url_parsed = urlparse(url)
+        return "{}://{}".format(url_parsed.scheme, url_parsed.hostname)
 
     def add_instance(self, instance_name):
         client = self.client()
