@@ -29,10 +29,10 @@ class DockerManager(object):
 
         self.storage = MongoStorage()
 
-    def client(self):
-        return docker.Client(
-            base_url=random.choice(self.docker_hosts)
-        )
+    def client(self, host=None):
+        if not host:
+            host = random.choice(self.docker_hosts)
+        return docker.Client(base_url=host)
 
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
