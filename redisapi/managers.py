@@ -68,8 +68,9 @@ class DockerManager(object):
         pass
 
     def remove_instance(self, instance):
-        self.client().stop(instance.container_id)
-        self.client().remove_container(instance.container_id)
+        client = self.client()
+        client.stop(instance.container_id)
+        client.remove_container(instance.container_id)
         self.health_checker().remove(self.server, instance.port)
 
     def is_ok(self):
