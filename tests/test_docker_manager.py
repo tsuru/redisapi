@@ -126,6 +126,7 @@ class DockerManagerTest(unittest.TestCase):
 
         self.manager.remove_instance(instance)
         remove_mock.remove.assert_called_with("localhost", 123)
+        self.manager.client.assert_called_with("http://host:4243")
         self.manager.client().stop.assert_called_with(instance.container_id)
         self.manager.client().remove_container.assert_called(
             instance.container_id)

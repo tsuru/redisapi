@@ -71,7 +71,8 @@ class DockerManager(object):
         pass
 
     def remove_instance(self, instance):
-        client = self.client()
+        url = self.docker_url_from_hostname(instance.host)
+        client = self.client(url)
         client.stop(instance.container_id)
         client.remove_container(instance.container_id)
         self.health_checker().remove(self.server, instance.port)
