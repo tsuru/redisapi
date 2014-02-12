@@ -41,6 +41,7 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertIsInstance(manager, DockerHaManager)
 
     def test_manager_by_instance(self):
+        os.environ["DOCKER_HOSTS"] = "[]"
         instance = Instance(
             host='host',
             container_id='id',

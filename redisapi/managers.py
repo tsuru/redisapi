@@ -16,6 +16,10 @@ from storage import MongoStorage, Instance
 
 class DockerHaManager(object):
 
+    def __init__(self):
+        docker_hosts = get_value("DOCKER_HOSTS")
+        self.docker_hosts = json.loads(docker_hosts)
+
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
