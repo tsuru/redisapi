@@ -24,6 +24,9 @@ class DockerHaManager(object):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
 
+    def client(self, host):
+        return docker.Client(base_url=host)
+
 
 class DockerManager(object):
     def __init__(self):

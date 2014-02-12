@@ -27,3 +27,8 @@ class DockerHaManagerTest(unittest.TestCase):
     def test_docker_hosts(self):
         hosts = ["http://host1.com:4243", "http://localhost:4243"]
         self.assertListEqual(self.manager.docker_hosts, hosts)
+
+    def test_client(self):
+        manager = DockerHaManager()
+        client = manager.client(host="myhost")
+        self.assertIn(client.base_url, "myhost")
