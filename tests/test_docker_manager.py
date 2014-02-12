@@ -33,6 +33,16 @@ class DockerManagerTest(unittest.TestCase):
     def tearDown(self):
         self.manager.storage.conn()['redisapi']['instances'].remove()
 
+    def test_client(self):
+        os.environ["DOCKER_HOSTS"] = '["http://host1.com:4243", \
+            "http://localhost:4243"]'
+        self.addCleanup(self.remove_env, "DOCKER_HOSTS")
+        from redisapi.managers import DockerManager
+        manager = DockerManager()
+        client = manager.client()
+        hosts = ["http://host1.com:4243", "http://localhost:4243"]
+        self.assertIn(client.base_url, hosts)
+
     def test_hc(self):
         from redisapi.hc import FakeHealthCheck
         from redisapi.managers import DockerManager

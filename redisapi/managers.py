@@ -6,6 +6,7 @@ import os
 import json
 import redis
 import docker
+import random
 
 from hc import health_checkers
 from utils import get_value
@@ -29,7 +30,9 @@ class DockerManager(object):
         self.storage = MongoStorage()
 
     def client(self):
-        return docker.Client(base_url='unix://var/run/docker.sock')
+        return docker.Client(
+            base_url=random.choice(self.docker_hosts)
+        )
 
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
