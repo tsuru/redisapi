@@ -24,6 +24,6 @@ class DockerHaManagerTest(unittest.TestCase):
     def test_hc(self):
         self.assertIsInstance(self.manager.health_checker(), FakeHealthCheck)
 
-    def test_client(self):
+    def test_docker_hosts(self):
         hosts = ["http://host1.com:4243", "http://localhost:4243"]
         self.assertListEqual(self.manager.docker_hosts, hosts)
