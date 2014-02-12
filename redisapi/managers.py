@@ -42,6 +42,9 @@ class DockerManager(object):
     def extract_hostname(self, url):
         return urlparse(url).hostname
 
+    def docker_url_from_hostname(self, hostname):
+        return "http://{}:4243".format(hostname)
+
     def add_instance(self, instance_name):
         client = self.client()
         output = client.create_container(self.image_name, command="")

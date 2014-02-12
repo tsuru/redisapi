@@ -49,6 +49,12 @@ class DockerManagerTest(unittest.TestCase):
         url = manager.extract_hostname("http://host.com:4243")
         self.assertEqual(url, "host.com")
 
+    def test_docker_host_from_hostname(self):
+        from redisapi.managers import DockerManager
+        manager = DockerManager()
+        url = manager.docker_url_from_hostname("host.com")
+        self.assertEqual(url, "http://host.com:4243")
+
     def test_client_with_value(self):
         from redisapi.managers import DockerManager
         manager = DockerManager()
