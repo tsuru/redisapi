@@ -17,6 +17,7 @@ from storage import MongoStorage, Instance
 class DockerHaManager(object):
 
     def __init__(self):
+        self.image_name = get_value("REDIS_IMAGE")
         docker_hosts = get_value("DOCKER_HOSTS")
         self.docker_hosts = json.loads(docker_hosts)
 
@@ -26,6 +27,37 @@ class DockerHaManager(object):
 
     def client(self, host):
         return docker.Client(base_url=host)
+
+    def extract_hostname(self, url):
+        return urlparse(url).hostname
+
+    def docker_url_from_hostname(self, hostname):
+        return "http://{}:4243".format(hostname)
+
+    def add_instance(self, instance_name):
+        hosts = self.docker_hosts[:]
+        random.shuffle(hosts)
+        endpoints = []
+
+        for i in range(3):
+            host = hosts.pop()
+            client = self.client(host)
+            output = client.create_container(self.image_name, command="")
+            client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
+            container = client.inspect_container(output["Id"])
+            ports = container['NetworkSettings']['Ports']
+            port = ports['6379/tcp'][0]['HostPort']
+            host = self.extract_hostname(self.client.base_url)
+            self.health_checker().add(host, port)
+            endpoints.append(
+                {"host": host, "port": port, "container_id": output["Id"]}
+            )
+
+        return Instance(
+            name=instance_name,
+            plan='basic',
+            endpoints=endpoints,
+        )
 
 
 class DockerManager(object):
