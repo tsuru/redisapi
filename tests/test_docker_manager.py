@@ -106,10 +106,11 @@ class DockerManagerTest(unittest.TestCase):
             port_bindings={6379: ('0.0.0.0',)}
         )
         add_mock.add.assert_called_with("localhost", u"49154")
+        endpoint = instance.endpoints[0]
         self.assertEqual(instance.name, "name")
-        self.assertEqual(instance.container_id, "12")
-        self.assertEqual(instance.host, "localhost")
-        self.assertEqual(instance.port, u"49154")
+        self.assertEqual(endpoint["container_id"], "12")
+        self.assertEqual(endpoint["host"], "localhost")
+        self.assertEqual(endpoint["port"], u"49154")
         self.assertEqual(instance.plan, "basic")
 
     def test_remove_instance(self):
@@ -117,32 +118,30 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.health_checker.return_value = remove_mock
         instance = Instance(
             name="name",
-            container_id="12",
-            port=123,
-            host="host",
             plan="basic",
+            endpoints=[{"host": "host", "port": 123, "container_id": "12"}],
         )
         self.manager.storage.add_instance(instance)
 
         self.manager.remove_instance(instance)
         remove_mock.remove.assert_called_with("host", 123)
         self.manager.client.assert_called_with("http://host:4243")
-        self.manager.client().stop.assert_called_with(instance.container_id)
+        self.manager.client().stop.assert_called_with(
+            instance.endpoints[0]["container_id"])
         self.manager.client().remove_container.assert_called(
-            instance.container_id)
+            instance.endpoints[0]["container_id"])
         self.manager.storage.remove_instance(instance)
 
     def test_bind(self):
         instance = Instance(
             name="name",
-            container_id="12",
-            host='localhost',
-            port='4242',
             plan='basic',
+            endpoints=[{"host": "localhost", "port": "4242",
+                        "container_id": "12"}],
         )
         result = self.manager.bind(instance)
-        self.assertEqual(result['REDIS_HOST'], instance.host)
-        self.assertEqual(result['REDIS_PORT'], instance.port)
+        self.assertEqual(result['REDIS_HOST'], "localhost")
+        self.assertEqual(result['REDIS_PORT'], "4242")
 
     def test_running_without_the_REDIS_IMAGE_variable(self):
         del os.environ["REDIS_IMAGE"]

@@ -60,29 +60,29 @@ class DockerManager(object):
         host = self.extract_hostname(self.client.base_url)
         instance = Instance(
             name=instance_name,
-            container_id=output["Id"],
-            host=host,
-            port=port,
             plan='basic',
+            endpoints=[{"host": host, "port": port,
+                        "container_id": output["Id"]}],
         )
         self.health_checker().add(host, port)
         return instance
 
     def bind(self, instance):
         return {
-            "REDIS_HOST": instance.host,
-            "REDIS_PORT": instance.port,
+            "REDIS_HOST": instance.endpoints[0]["host"],
+            "REDIS_PORT": instance.endpoints[0]["port"],
         }
 
     def unbind(self):
         pass
 
     def remove_instance(self, instance):
-        url = self.docker_url_from_hostname(instance.host)
+        endpoint = instance.endpoints[0]
+        url = self.docker_url_from_hostname(endpoint["host"])
         client = self.client(url)
-        client.stop(instance.container_id)
-        client.remove_container(instance.container_id)
-        self.health_checker().remove(instance.host, instance.port)
+        client.stop(endpoint["container_id"])
+        client.remove_container(endpoint["container_id"])
+        self.health_checker().remove(endpoint["host"], endpoint["port"])
 
     def is_ok(self):
         pass
@@ -121,16 +121,15 @@ class SharedManager(object):
         port = os.environ.get("REDIS_SERVER_PORT", "6379")
         return Instance(
             name=instance_name,
-            host=host,
-            port=port,
             plan='development',
-            container_id='',
+            endpoints=[{"host": host, "port": port}],
         )
 
     def bind(self, instance):
+        endpoint = instance.endpoints[0]
         return {
-            "REDIS_HOST": instance.host,
-            "REDIS_PORT": instance.port,
+            "REDIS_HOST": endpoint["host"],
+            "REDIS_PORT": endpoint["port"],
         }
 
     def unbind(self):

@@ -43,11 +43,9 @@ class RedisAPITestCase(unittest.TestCase):
     def test_manager_by_instance(self):
         os.environ["DOCKER_HOSTS"] = "[]"
         instance = Instance(
-            host='host',
-            container_id='id',
             name='name',
-            port='port',
             plan='plus',
+            endpoints=[{"host": "host", "port": "port", "container_id": "id"}],
         )
         manager = manager_by_instance(instance)
         self.assertIsInstance(manager, DockerHaManager)
@@ -85,11 +83,10 @@ class RedisAPITestCase(unittest.TestCase):
     def test_bind(self):
         storage = MongoStorage()
         instance = Instance(
-            host='host',
-            container_id='id',
             name='myinstance',
-            port='port',
             plan='development',
+            endpoints=[{"host": "host", "port": "port",
+                        "container_id": "id"}],
         )
         storage.add_instance(instance)
         response = self.app.post(
@@ -98,8 +95,9 @@ class RedisAPITestCase(unittest.TestCase):
         )
         self.assertEqual(201, response.status_code)
         j = json.loads(response.data)
-        self.assertEqual({"REDIS_HOST": instance.host,
-                          "REDIS_PORT": instance.port}, j)
+        endpoint = instance.endpoints[0]
+        self.assertDictEqual({"REDIS_HOST": endpoint["host"],
+                              "REDIS_PORT": endpoint["port"]}, j)
 
     def test_unbind(self):
         from redisapi import api

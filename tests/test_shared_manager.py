@@ -40,10 +40,8 @@ class SharedManagerTest(unittest.TestCase):
     def test_bind_returns_the_server_host_and_port(self):
         instance = Instance(
             name='ble',
-            host='localhost',
-            port='6379',
             plan='development',
-            container_id='',
+            endpoints=[{"host": "localhost", "port": "6379"}],
         )
         envs = self.manager.bind(instance)
         self.assertEqual(
@@ -54,25 +52,22 @@ class SharedManagerTest(unittest.TestCase):
     def test_add_instance(self):
         instance = self.manager.add_instance("ble")
         self.assertEqual(instance.name, 'ble')
-        self.assertEqual(instance.host, 'localhost')
-        self.assertEqual(instance.port, '6379')
         self.assertEqual(instance.plan, 'development')
-        self.assertEqual(instance.container_id, '')
+        self.assertListEqual(instance.endpoints, [{"host": "localhost",
+                                                   "port": "6379"}])
 
     def test_add_instance_returns_the_REDIS_PUBLIC_HOST_when_its_defined(self):
         os.environ["REDIS_PUBLIC_HOST"] = "redis.tsuru.io"
         self.addCleanup(self.remove_env, "REDIS_PUBLIC_HOST")
         instance = self.manager.add_instance('ble')
-        self.assertEqual(instance.port, "6379")
-        self.assertEqual(instance.host, "redis.tsuru.io")
+        self.assertListEqual(instance.endpoints, [{"host": "redis.tsuru.io",
+                                                   "port": "6379"}])
 
     def test_bind_returns_the_REDIS_SERVER_PORT_when_its_defined(self):
         instance = Instance(
             name='ble',
-            host='localhost',
-            port='12345',
             plan='development',
-            container_id='',
+            endpoints=[{"host": "localhost", "port": "12345"}],
         )
         envs = self.manager.bind(instance)
         want = {
