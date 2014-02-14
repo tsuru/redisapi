@@ -47,7 +47,9 @@ class DockerHaManagerTest(unittest.TestCase):
         self.manager.client().create_container.return_value = {"Id": "12"}
         self.manager.client().inspect_container.return_value = {
             'NetworkSettings': {
-                u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
+                u'Ports': {
+                    u'6379/tcp': [{u'HostPort': u'49154'}],
+                    u'26379/tcp': [{u'HostPort': u'49155'}]}}}
 
         instance = self.manager.add_instance("name")
 
@@ -57,13 +59,16 @@ class DockerHaManagerTest(unittest.TestCase):
         )
         self.manager.client().start.assert_called_with(
             "12",
-            port_bindings={6379: ('0.0.0.0',)}
+            port_bindings={6379: ('0.0.0.0',), 26379: ('0.0.0.0',)}
         )
         add_mock.add.assert_called_with("localhost", u"49154")
         expected_endpoints = [
-            {"container_id": "12", "host": "localhost", "port": "49154"},
-            {"container_id": "12", "host": "localhost", "port": "49154"},
-            {"container_id": "12", "host": "localhost", "port": "49154"},
+            {"container_id": "12", "host": "localhost", "port": "49154",
+             "sentinel_port": "49155"},
+            {"container_id": "12", "host": "localhost", "port": "49154",
+             "sentinel_port": "49155"},
+            {"container_id": "12", "host": "localhost", "port": "49154",
+             "sentinel_port": "49155"},
         ]
         self.assertEqual(instance.name, "name")
         self.assertListEqual(instance.endpoints, expected_endpoints)

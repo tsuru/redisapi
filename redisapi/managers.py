@@ -43,14 +43,17 @@ class DockerHaManager(object):
             host = hosts.pop()
             client = self.client(host)
             output = client.create_container(self.image_name, command="")
-            client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
+            client.start(output["Id"], port_bindings={
+                6379: ('0.0.0.0',), 26379: ('0.0.0.0',)})
             container = client.inspect_container(output["Id"])
             ports = container['NetworkSettings']['Ports']
             port = ports['6379/tcp'][0]['HostPort']
+            sentinel_port = ports['26379/tcp'][0]['HostPort']
             host = self.extract_hostname(self.client.base_url)
             self.health_checker().add(host, port)
             endpoints.append(
-                {"host": host, "port": port, "container_id": output["Id"]}
+                {"host": host, "port": port, "container_id": output["Id"],
+                 "sentinel_port": sentinel_port}
             )
 
         return Instance(
