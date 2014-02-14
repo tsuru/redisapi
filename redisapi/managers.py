@@ -59,6 +59,14 @@ class DockerHaManager(object):
             endpoints=endpoints,
         )
 
+    def remove_instance(self, instance):
+        for endpoint in instance.endpoints:
+            url = self.docker_url_from_hostname(endpoint["host"])
+            client = self.client(url)
+            client.stop(endpoint["container_id"])
+            client.remove_container(endpoint["container_id"])
+            self.health_checker().remove(endpoint["host"], endpoint["port"])
+
 
 class DockerManager(object):
     def __init__(self):

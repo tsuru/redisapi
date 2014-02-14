@@ -8,6 +8,7 @@ import unittest
 
 from redisapi.hc import FakeHealthCheck
 from redisapi.managers import DockerHaManager
+from redisapi.storage import Instance, MongoStorage
 
 
 class DockerHaManagerTest(unittest.TestCase):
@@ -23,6 +24,7 @@ class DockerHaManagerTest(unittest.TestCase):
             "http://localhost:4243", "http://host2.com:4243"]'
         self.addCleanup(self.remove_env, "DOCKER_HOSTS")
         self.manager = DockerHaManager()
+        self.storage = MongoStorage()
 
     def test_hc(self):
         self.assertIsInstance(self.manager.health_checker(), FakeHealthCheck)
@@ -66,3 +68,30 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertEqual(instance.name, "name")
         self.assertListEqual(instance.endpoints, expected_endpoints)
         self.assertEqual(instance.plan, "basic")
+
+    def test_remove_instance(self):
+        remove_mock = mock.Mock()
+        self.manager.health_checker = mock.Mock()
+        self.manager.health_checker.return_value = remove_mock
+        self.manager.client = mock.Mock()
+        self.manager.client.return_value = mock.Mock()
+        instance = Instance(
+            name="name",
+            plan="basic",
+            endpoints=[
+                {"host": "host", "port": 123, "container_id": "12"},
+                {"host": "host", "port": 123, "container_id": "12"},
+                {"host": "host", "port": 123, "container_id": "12"},
+            ],
+        )
+        self.storage.add_instance(instance)
+
+        self.manager.remove_instance(instance)
+
+        remove_mock.remove.assert_called_with("host", 123)
+        self.manager.client.assert_called_with("http://host:4243")
+        self.manager.client().stop.assert_called_with(
+            instance.endpoints[0]["container_id"])
+        self.manager.client().remove_container.assert_called(
+            instance.endpoints[0]["container_id"])
+        self.storage.remove_instance(instance)
