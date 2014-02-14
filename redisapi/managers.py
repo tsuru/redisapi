@@ -34,7 +34,7 @@ class DockerHaManager(object):
     def docker_url_from_hostname(self, hostname):
         return "http://{}:4243".format(hostname)
 
-    def start_redis_container(self, host):
+    def start_redis_container(self, host, slaveof=None):
         client = self.client(host)
         output = client.create_container(self.image_name, command="")
         client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
@@ -50,10 +50,13 @@ class DockerHaManager(object):
         random.shuffle(hosts)
         endpoints = []
 
-        for i in range(2):
-            host = hosts.pop()
-            endpoint = self.start_redis_container(host)
-            endpoints.append(endpoint)
+        host = hosts.pop()
+        endpoint = self.start_redis_container(host)
+        endpoints.append(endpoint)
+
+        host = hosts.pop()
+        endpoint = self.start_redis_container(host, slaveof=endpoint)
+        endpoints.append(endpoint)
 
         return Instance(
             name=instance_name,
