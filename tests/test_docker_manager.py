@@ -93,8 +93,7 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.client().create_container.return_value = {"Id": "12"}
         self.manager.client().inspect_container.return_value = {
             'NetworkSettings': {
-                u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}],
-                           u'26379/tcp': [{u'HostPort': u'49155'}]}}}
+                u'Ports': {u'6379/tcp': [{u'HostPort': u'49154'}]}}}
 
         instance = self.manager.add_instance("name")
 
@@ -104,7 +103,7 @@ class DockerManagerTest(unittest.TestCase):
         )
         self.manager.client().start.assert_called_with(
             "12",
-            port_bindings={6379: ('0.0.0.0',), 26379: ('0.0.0.0',)}
+            port_bindings={6379: ('0.0.0.0',)}
         )
         add_mock.add.assert_called_with("localhost", u"49154")
         endpoint = instance.endpoints[0]

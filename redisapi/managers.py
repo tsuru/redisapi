@@ -97,19 +97,15 @@ class DockerManager(object):
     def add_instance(self, instance_name):
         client = self.client()
         output = client.create_container(self.image_name, command="")
-        client.start(output["Id"], port_bindings={
-            6379: ('0.0.0.0',), 26379: ('0.0.0.0',)})
+        client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
         container = client.inspect_container(output["Id"])
-        ports = container['NetworkSettings']['Ports']
-        port = ports['6379/tcp'][0]['HostPort']
-        sentinel_port = ports['26379/tcp'][0]['HostPort']
+        port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         host = self.extract_hostname(self.client.base_url)
         instance = Instance(
             name=instance_name,
             plan='basic',
-            endpoints=[
-                {"host": host, "port": port, "container_id": output["Id"],
-                 "sentinel_port": sentinel_port}],
+            endpoints=[{"host": host, "port": port,
+                        "container_id": output["Id"]}],
         )
         self.health_checker().add(host, port)
         return instance
