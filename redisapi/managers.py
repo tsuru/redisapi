@@ -34,7 +34,7 @@ class DockerHaManager(object):
     def docker_url_from_hostname(self, hostname):
         return "http://{}:4243".format(hostname)
 
-    def start_redis_container(self, host, slaveof=None):
+    def start_redis_container(self, host, slave_of=None):
         client = self.client(host)
         output = client.create_container(self.image_name, command="")
         client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
@@ -43,7 +43,18 @@ class DockerHaManager(object):
         port = ports['6379/tcp'][0]['HostPort']
         host = self.extract_hostname(self.client.base_url)
         self.health_checker().add(host, port)
-        return {"host": host, "port": port, "container_id": output["Id"]}
+        endpoint = {"host": host, "port": port, "container_id": output["Id"]}
+        if slave_of:
+            self.slave_of(slave_of, endpoint)
+        else:
+            self.config_sentinels(endpoint)
+        return endpoint
+
+    def slave_of(self, master, slave):
+        pass
+
+    def config_sentinels(self, master):
+        pass
 
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
@@ -55,7 +66,7 @@ class DockerHaManager(object):
         endpoints.append(endpoint)
 
         host = hosts.pop()
-        endpoint = self.start_redis_container(host, slaveof=endpoint)
+        endpoint = self.start_redis_container(host, slave_of=endpoint)
         endpoints.append(endpoint)
 
         return Instance(

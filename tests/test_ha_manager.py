@@ -43,6 +43,8 @@ class DockerHaManagerTest(unittest.TestCase):
         add_mock = mock.Mock()
         self.manager.health_checker = mock.Mock()
         self.manager.health_checker.return_value = add_mock
+        self.manager.slave_of = mock.Mock()
+        self.manager.config_sentinels = mock.Mock()
         self.manager.client = mock.Mock(base_url="http://localhost:4243")
         self.manager.client().create_container.return_value = {"Id": "12"}
         self.manager.client().inspect_container.return_value = {
@@ -68,6 +70,9 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertEqual(instance.name, "name")
         self.assertListEqual(instance.endpoints, expected_endpoints)
         self.assertEqual(instance.plan, "basic")
+
+        self.manager.slave_of.assert_called_with(*expected_endpoints)
+        self.manager.config_sentinels.assert_called_with(expected_endpoints[0])
 
     def test_remove_instance(self):
         remove_mock = mock.Mock()
