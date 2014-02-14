@@ -34,6 +34,17 @@ class DockerHaManager(object):
     def docker_url_from_hostname(self, hostname):
         return "http://{}:4243".format(hostname)
 
+    def start_redis_container(self, host):
+        client = self.client(host)
+        output = client.create_container(self.image_name, command="")
+        client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
+        container = client.inspect_container(output["Id"])
+        ports = container['NetworkSettings']['Ports']
+        port = ports['6379/tcp'][0]['HostPort']
+        host = self.extract_hostname(self.client.base_url)
+        self.health_checker().add(host, port)
+        return {"host": host, "port": port, "container_id": output["Id"]}
+
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
         random.shuffle(hosts)
@@ -41,17 +52,8 @@ class DockerHaManager(object):
 
         for i in range(2):
             host = hosts.pop()
-            client = self.client(host)
-            output = client.create_container(self.image_name, command="")
-            client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
-            container = client.inspect_container(output["Id"])
-            ports = container['NetworkSettings']['Ports']
-            port = ports['6379/tcp'][0]['HostPort']
-            host = self.extract_hostname(self.client.base_url)
-            self.health_checker().add(host, port)
-            endpoints.append(
-                {"host": host, "port": port, "container_id": output["Id"]}
-            )
+            endpoint = self.start_redis_container(host)
+            endpoints.append(endpoint)
 
         return Instance(
             name=instance_name,
