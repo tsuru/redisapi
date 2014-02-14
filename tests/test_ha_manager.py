@@ -39,6 +39,16 @@ class DockerHaManagerTest(unittest.TestCase):
         client = manager.client(host="myhost")
         self.assertIn(client.base_url, "myhost")
 
+    @mock.patch("redis.StrictRedis")
+    def test_slave_of(self, redis_mock):
+        redis_instance_mock = mock.Mock()
+        redis_mock.return_value = redis_instance_mock
+        master = {"host": "localhost", "port": "3333"}
+        slave = {"host": "myhost", "port": "9999"}
+        self.manager.slave_of(master, slave)
+        redis_mock.assert_called_with(host=slave["host"], port=["port"])
+        redis_instance_mock.slaveof(master["host"], master["port"])
+
     def test_add_instance(self):
         add_mock = mock.Mock()
         self.manager.health_checker = mock.Mock()

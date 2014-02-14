@@ -51,7 +51,8 @@ class DockerHaManager(object):
         return endpoint
 
     def slave_of(self, master, slave):
-        pass
+        r = redis.StrictRedis(host=slave["host"], port=["port"])
+        r.slave_of(master["host"], master["port"])
 
     def config_sentinels(self, master):
         pass
