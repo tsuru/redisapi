@@ -5,5 +5,5 @@ RUN         /usr/bin/add-apt-repository ppa:chris-lea/redis-server
 RUN         apt-get update
 RUN         apt-get -y --force-yes install redis-server
 RUN         touch /tmp/sentinel.conf
-CMD         ["--setinel --loglevel warning --port 26379"]
+CMD         ["/tmp/sentinel.conf","--sentinel","--port 26379","--loglevel warning"]
 ENTRYPOINT  ["/usr/bin/redis-server"]
