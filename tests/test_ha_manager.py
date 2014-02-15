@@ -40,6 +40,19 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertIn(client.base_url, "myhost")
 
     @mock.patch("redis.StrictRedis")
+    def test_config_sentinels(self, redis_mock):
+        redis_instance_mock = mock.Mock()
+        redis_mock.return_value = redis_instance_mock
+
+        master = {"host": "localhost", "port": "3333"}
+        self.manager.config_sentinels("master_name", master)
+
+        redis_mock.assert_called_with(host="host", port="port")
+        redis_instance_mock.execute_command.assert_called_with(
+            'sentinel set master_name parallel-syncs 1'
+        )
+
+    @mock.patch("redis.StrictRedis")
     def test_slave_of(self, redis_mock):
         redis_instance_mock = mock.Mock()
         redis_mock.return_value = redis_instance_mock
