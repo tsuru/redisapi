@@ -95,7 +95,8 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertEqual(instance.plan, "basic")
 
         self.manager.slave_of.assert_called_with(*expected_endpoints)
-        self.manager.config_sentinels.assert_called_with(expected_endpoints[0])
+        self.manager.config_sentinels.assert_called_with(
+            "name", expected_endpoints[0])
 
     def test_remove_instance(self):
         remove_mock = mock.Mock()
