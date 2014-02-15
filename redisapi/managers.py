@@ -19,6 +19,8 @@ class DockerHaManager(object):
     def __init__(self):
         self.image_name = get_value("REDIS_IMAGE")
         docker_hosts = get_value("DOCKER_HOSTS")
+        sentinel_hosts = get_value("SENTINEL_HOSTS")
+        self.sentinel_hosts = json.loads(sentinel_hosts)
         self.docker_hosts = json.loads(docker_hosts)
 
     def health_checker(self):

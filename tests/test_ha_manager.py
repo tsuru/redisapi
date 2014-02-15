@@ -23,11 +23,19 @@ class DockerHaManagerTest(unittest.TestCase):
         os.environ["DOCKER_HOSTS"] = '["http://host1.com:4243", \
             "http://localhost:4243", "http://host2.com:4243"]'
         self.addCleanup(self.remove_env, "DOCKER_HOSTS")
+        os.environ["SENTINEL_HOSTS"] = '["http://host1.com:4243", \
+            "http://localhost:4243", "http://host2.com:4243"]'
+        self.addCleanup(self.remove_env, "SENTINEL_HOSTS")
         self.manager = DockerHaManager()
         self.storage = MongoStorage()
 
     def test_hc(self):
         self.assertIsInstance(self.manager.health_checker(), FakeHealthCheck)
+
+    def test_sentinel_hosts(self):
+        hosts = ["http://host1.com:4243", "http://localhost:4243",
+                 "http://host2.com:4243"]
+        self.assertListEqual(self.manager.sentinel_hosts, hosts)
 
     def test_docker_hosts(self):
         hosts = ["http://host1.com:4243", "http://localhost:4243",

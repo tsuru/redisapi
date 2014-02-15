@@ -37,12 +37,14 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertIsInstance(manager, DockerManager)
 
     def test_manager_by_plan_name_plus(self):
+        os.environ["SENTINEL_HOSTS"] = "[]"
         manager = manager_by_plan_name("plus")
         self.assertIsInstance(manager, DockerHaManager)
 
     def test_manager_by_instance(self):
         os.environ["REDIS_IMAGE"] = "redisapi"
         os.environ["DOCKER_HOSTS"] = "[]"
+        os.environ["SENTINEL_HOSTS"] = "[]"
         instance = Instance(
             name='name',
             plan='plus',
