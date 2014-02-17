@@ -49,9 +49,6 @@ class DockerHaManagerTest(unittest.TestCase):
 
     @mock.patch("redis.StrictRedis")
     def test_config_sentinels(self, redis_mock):
-        #redis_instance_mock = mock.Mock()
-        #redis_mock.return_value = redis_instance_mock
-
         master = {"host": "localhost", "port": "3333"}
         self.manager.config_sentinels("master_name", master)
 
