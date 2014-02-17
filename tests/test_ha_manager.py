@@ -123,6 +123,7 @@ class DockerHaManagerTest(unittest.TestCase):
 
     def test_remove_instance(self):
         remove_mock = mock.Mock()
+        self.manager.remove_from_sentinel = mock.Mock()
         self.manager.health_checker = mock.Mock()
         self.manager.health_checker.return_value = remove_mock
         self.manager.client = mock.Mock()
@@ -147,3 +148,5 @@ class DockerHaManagerTest(unittest.TestCase):
         self.manager.client().remove_container.assert_called(
             instance.endpoints[0]["container_id"])
         self.storage.remove_instance(instance)
+        self.manager.remove_from_sentinel.assert_called_with(
+            instance.endpoints[0])

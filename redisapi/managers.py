@@ -99,6 +99,11 @@ class DockerHaManager(object):
             client.remove_container(endpoint["container_id"])
             self.health_checker().remove(endpoint["host"], endpoint["port"])
 
+        self.remove_from_sentinel(instance.endpoints[0])
+
+    def remove_from_sentinel(self, master):
+        pass
+
 
 class DockerManager(object):
     def __init__(self):
