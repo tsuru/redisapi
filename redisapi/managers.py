@@ -57,17 +57,18 @@ class DockerHaManager(object):
         r.slave_of(master["host"], master["port"])
 
     def config_sentinels(self, master_name, master):
-        r = redis.StrictRedis(host="host", port="port")
-        commands = [
-            "sentinel monitor {} {} {} 1".format(
-                master_name, master["host"], master["port"]),
-            "sentinel set {} down-after-milliseconds 5000".format(
-                master_name),
-            "sentinel set {} failover-timeout 60000".format(master_name),
-            "sentinel set {} parallel-syncs 1".format(master_name),
-        ]
-        for command in commands:
-            r.execute_command(command)
+        for sentinel in self.sentinel_hosts:
+            r = redis.StrictRedis(host="host", port="port")
+            commands = [
+                "sentinel monitor {} {} {} 1".format(
+                    master_name, master["host"], master["port"]),
+                "sentinel set {} down-after-milliseconds 5000".format(
+                    master_name),
+                "sentinel set {} failover-timeout 60000".format(master_name),
+                "sentinel set {} parallel-syncs 1".format(master_name),
+            ]
+            for command in commands:
+                r.execute_command(command)
 
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
