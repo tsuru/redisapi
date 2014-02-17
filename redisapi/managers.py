@@ -58,7 +58,8 @@ class DockerHaManager(object):
 
     def config_sentinels(self, master_name, master):
         for sentinel in self.sentinel_hosts:
-            r = redis.StrictRedis(host="host", port="port")
+            host, port = sentinel.replace("http://", "").split(":")
+            r = redis.StrictRedis(host=host, port=port)
             commands = [
                 "sentinel monitor {} {} {} 1".format(
                     master_name, master["host"], master["port"]),
