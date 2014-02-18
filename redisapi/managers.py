@@ -33,6 +33,9 @@ class DockerBase(object):
     def docker_url_from_hostname(self, hostname):
         return "http://{}:4243".format(hostname)
 
+    def client(self, host):
+        return docker.Client(base_url=host)
+
     def unbind(self):
         pass
 
@@ -41,9 +44,6 @@ class DockerBase(object):
 
 
 class DockerHaManager(DockerBase):
-
-    def client(self, host):
-        return docker.Client(base_url=host)
 
     def start_redis_container(self, name, host, slave_of=None):
         client = self.client(host)
@@ -135,7 +135,7 @@ class DockerManager(DockerBase):
     def client(self, host=None):
         if not host:
             host = random.choice(self.docker_hosts)
-        return docker.Client(base_url=host)
+        return super(DockerManager, self).client(host)
 
     def add_instance(self, instance_name):
         client = self.client()
