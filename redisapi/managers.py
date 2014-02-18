@@ -36,6 +36,19 @@ class DockerBase(object):
     def client(self, host):
         return docker.Client(base_url=host)
 
+    def bind(self, instance):
+        redis_hosts = []
+
+        for endpoint in instance.endpoints:
+            redis_hosts.append("{}:{}".format(
+                endpoint["host"], endpoint["port"]))
+
+        return {
+            "SENTINEL_HOSTS": self.sentinel_hosts,
+            "REDIS_HOSTS": redis_hosts,
+            "REDIS_MASTER": instance.name,
+        }
+
     def unbind(self):
         pass
 
@@ -116,19 +129,6 @@ class DockerHaManager(DockerBase):
             r = redis.StrictRedis(host=host, port=port)
             r.execute_command('sentinel remove {}'.format(master_name))
 
-    def bind(self, instance):
-        redis_hosts = []
-
-        for endpoint in instance.endpoints:
-            redis_hosts.append("{}:{}".format(
-                endpoint["host"], endpoint["port"]))
-
-        return {
-            "SENTINEL_HOSTS": self.sentinel_hosts,
-            "REDIS_HOSTS": redis_hosts,
-            "REDIS_MASTER": instance.name,
-        }
-
 
 class DockerManager(DockerBase):
 
@@ -154,19 +154,18 @@ class DockerManager(DockerBase):
         return instance
 
     def bind(self, instance):
+        envs = super(DockerManager, self).bind(instance)
         redis_hosts = []
 
         for endpoint in instance.endpoints:
             redis_hosts.append("{}:{}".format(
                 endpoint["host"], endpoint["port"]))
 
-        return {
+        envs.update({
             "REDIS_HOST": instance.endpoints[0]["host"],
             "REDIS_PORT": instance.endpoints[0]["port"],
-            "SENTINEL_HOSTS": self.sentinel_hosts,
-            "REDIS_HOSTS": redis_hosts,
-            "REDIS_MASTER": instance.name,
-        }
+            })
+        return envs
 
     def remove_instance(self, instance):
         endpoint = instance.endpoints[0]
