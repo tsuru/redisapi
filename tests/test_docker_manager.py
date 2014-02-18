@@ -16,6 +16,9 @@ class DockerManagerTest(unittest.TestCase):
             del os.environ[env]
 
     def setUp(self):
+        os.environ["SENTINEL_HOSTS"] = '["http://host1.com:4243", \
+            "http://localhost:4243", "http://host2.com:4243"]'
+        self.addCleanup(self.remove_env, "SENTINEL_HOSTS")
         os.environ["REDIS_SERVER_HOST"] = "localhost"
         self.addCleanup(self.remove_env, "REDIS_SERVER_HOST")
         os.environ["REDIS_IMAGE"] = "redisapi"
@@ -139,9 +142,20 @@ class DockerManagerTest(unittest.TestCase):
             endpoints=[{"host": "localhost", "port": "4242",
                         "container_id": "12"}],
         )
+
         result = self.manager.bind(instance)
+
         self.assertEqual(result['REDIS_HOST'], "localhost")
         self.assertEqual(result['REDIS_PORT'], "4242")
+        expected_redis = ['localhost:4242']
+        expected_sentinels = [
+            u'http://host1.com:4243',
+            u'http://localhost:4243',
+            u'http://host2.com:4243'
+        ]
+        self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
+        self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
+        self.assertEqual(result['REDIS_MASTER'], instance.name)
 
     def test_running_without_the_REDIS_IMAGE_variable(self):
         del os.environ["REDIS_IMAGE"]

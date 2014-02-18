@@ -134,6 +134,8 @@ class DockerManager(DockerBase):
         self.image_name = get_value("REDIS_IMAGE")
         docker_hosts = get_value("DOCKER_HOSTS")
         self.docker_hosts = json.loads(docker_hosts)
+        sentinel_hosts = get_value("SENTINEL_HOSTS")
+        self.sentinel_hosts = json.loads(sentinel_hosts)
 
         self.storage = MongoStorage()
 
@@ -159,9 +161,18 @@ class DockerManager(DockerBase):
         return instance
 
     def bind(self, instance):
+        redis_hosts = []
+
+        for endpoint in instance.endpoints:
+            redis_hosts.append("{}:{}".format(
+                endpoint["host"], endpoint["port"]))
+
         return {
             "REDIS_HOST": instance.endpoints[0]["host"],
             "REDIS_PORT": instance.endpoints[0]["port"],
+            "SENTINEL_HOSTS": self.sentinel_hosts,
+            "REDIS_HOSTS": redis_hosts,
+            "REDIS_MASTER": instance.name,
         }
 
     def remove_instance(self, instance):
