@@ -23,6 +23,27 @@ class DockerBase(object):
         self.sentinel_hosts = json.loads(sentinel_hosts)
         self.docker_hosts = json.loads(docker_hosts)
 
+    def config_sentinels(self, master_name, master):
+        for sentinel in self.sentinel_hosts:
+            host, port = sentinel.replace("http://", "").split(":")
+            r = redis.StrictRedis(host=host, port=port)
+            commands = [
+                "sentinel monitor {} {} {} 1".format(
+                    master_name, master["host"], master["port"]),
+                "sentinel set {} down-after-milliseconds 5000".format(
+                    master_name),
+                "sentinel set {} failover-timeout 60000".format(master_name),
+                "sentinel set {} parallel-syncs 1".format(master_name),
+            ]
+            for command in commands:
+                r.execute_command(command)
+
+    def remove_from_sentinel(self, master_name):
+        for sentinel in self.sentinel_hosts:
+            host, port = sentinel.replace("http://", "").split(":")
+            r = redis.StrictRedis(host=host, port=port)
+            r.execute_command('sentinel remove {}'.format(master_name))
+
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
@@ -78,21 +99,6 @@ class DockerHaManager(DockerBase):
         r = redis.StrictRedis(host=slave["host"], port=["port"])
         r.slave_of(master["host"], master["port"])
 
-    def config_sentinels(self, master_name, master):
-        for sentinel in self.sentinel_hosts:
-            host, port = sentinel.replace("http://", "").split(":")
-            r = redis.StrictRedis(host=host, port=port)
-            commands = [
-                "sentinel monitor {} {} {} 1".format(
-                    master_name, master["host"], master["port"]),
-                "sentinel set {} down-after-milliseconds 5000".format(
-                    master_name),
-                "sentinel set {} failover-timeout 60000".format(master_name),
-                "sentinel set {} parallel-syncs 1".format(master_name),
-            ]
-            for command in commands:
-                r.execute_command(command)
-
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
         random.shuffle(hosts)
@@ -122,12 +128,6 @@ class DockerHaManager(DockerBase):
             self.health_checker().remove(endpoint["host"], endpoint["port"])
 
         self.remove_from_sentinel(instance.name)
-
-    def remove_from_sentinel(self, master_name):
-        for sentinel in self.sentinel_hosts:
-            host, port = sentinel.replace("http://", "").split(":")
-            r = redis.StrictRedis(host=host, port=port)
-            r.execute_command('sentinel remove {}'.format(master_name))
 
 
 class DockerManager(DockerBase):

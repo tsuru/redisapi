@@ -168,3 +168,52 @@ class DockerManagerTest(unittest.TestCase):
             (u"You must define the REDIS_IMAGE environment variable.",),
             exc.args,
         )
+
+    @mock.patch("redis.StrictRedis")
+    def test_config_sentinels(self, redis_mock):
+        master = {"host": "localhost", "port": "3333"}
+        self.manager.config_sentinels("master_name", master)
+
+        calls = []
+        sentinels = [
+            {"host": u"host1.com", "port": u"4243"},
+            {"host": u"localhost", "port": u"4243"},
+            {"host": u"host2.com", "port": u"4243"},
+        ]
+        for sentinel in sentinels:
+            host, port = sentinel["host"], sentinel["port"]
+            sentinel_calls = [
+                mock.call(host=host, port=port),
+                mock.call().execute_command(
+                    'sentinel monitor master_name localhost 3333 1'),
+                mock.call().execute_command(
+                    'sentinel set master_name down-after-milliseconds 5000'),
+                mock.call().execute_command(
+                    'sentinel set master_name failover-timeout 60000'),
+                mock.call().execute_command(
+                    'sentinel set master_name parallel-syncs 1'),
+            ]
+            calls.extend(sentinel_calls)
+
+        redis_mock.assert_has_calls(calls)
+
+    @mock.patch("redis.StrictRedis")
+    def test_remove_from_sentinel(self, redis_mock):
+        self.manager.remove_from_sentinel("master_name")
+
+        calls = []
+        sentinels = [
+            {"host": u"host1.com", "port": u"4243"},
+            {"host": u"localhost", "port": u"4243"},
+            {"host": u"host2.com", "port": u"4243"},
+        ]
+        for sentinel in sentinels:
+            host, port = sentinel["host"], sentinel["port"]
+            sentinel_calls = [
+                mock.call(host=host, port=port),
+                mock.call().execute_command(
+                    'sentinel remove master_name'),
+            ]
+            calls.extend(sentinel_calls)
+
+        redis_mock.assert_has_calls(calls)
