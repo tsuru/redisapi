@@ -6,7 +6,7 @@ import unittest
 import mock
 import os
 
-from redisapi.storage import Instance
+from redisapi.storage import Instance, MongoStorage
 
 
 class DockerManagerTest(unittest.TestCase):
@@ -32,9 +32,10 @@ class DockerManagerTest(unittest.TestCase):
         client_mock.return_value = mock.Mock()
         self.manager.client = client_mock
         self.manager.health_checker = mock.Mock()
+        self.storage = MongoStorage()
 
     def tearDown(self):
-        self.manager.storage.conn()['redisapi']['instances'].remove()
+        self.storage.conn()['redisapi']['instances'].remove()
 
     def test_client(self):
         os.environ["DOCKER_HOSTS"] = '["http://host1.com:4243", \
@@ -124,7 +125,7 @@ class DockerManagerTest(unittest.TestCase):
             plan="basic",
             endpoints=[{"host": "host", "port": 123, "container_id": "12"}],
         )
-        self.manager.storage.add_instance(instance)
+        self.storage.add_instance(instance)
 
         self.manager.remove_instance(instance)
         remove_mock.remove.assert_called_with("host", 123)
@@ -133,7 +134,7 @@ class DockerManagerTest(unittest.TestCase):
             instance.endpoints[0]["container_id"])
         self.manager.client().remove_container.assert_called(
             instance.endpoints[0]["container_id"])
-        self.manager.storage.remove_instance(instance)
+        self.storage.remove_instance(instance)
 
     def test_bind(self):
         instance = Instance(

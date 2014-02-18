@@ -11,7 +11,7 @@ import random
 from urlparse import urlparse
 from hc import health_checkers
 from utils import get_value
-from storage import MongoStorage, Instance
+from storage import Instance
 
 
 class DockerBase(object):
@@ -136,8 +136,6 @@ class DockerManager(DockerBase):
         self.docker_hosts = json.loads(docker_hosts)
         sentinel_hosts = get_value("SENTINEL_HOSTS")
         self.sentinel_hosts = json.loads(sentinel_hosts)
-
-        self.storage = MongoStorage()
 
     def client(self, host=None):
         if not host:
