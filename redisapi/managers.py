@@ -107,6 +107,18 @@ class DockerHaManager(object):
             r = redis.StrictRedis(host=host, port=port)
             r.execute_command('sentinel remove {}'.format(master_name))
 
+    def bind(self, instance):
+        redis_hosts = []
+
+        for endpoint in instance.endpoints:
+            redis_hosts.append("{}:{}".format(
+                endpoint["host"], endpoint["port"]))
+
+        return {
+            "SENTINEL_HOSTS": self.sentinel_hosts,
+            "REDIS_HOSTS": redis_hosts,
+        }
+
 
 class DockerManager(object):
     def __init__(self):

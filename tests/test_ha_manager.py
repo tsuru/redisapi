@@ -171,3 +171,22 @@ class DockerHaManagerTest(unittest.TestCase):
             calls.extend(sentinel_calls)
 
         redis_mock.assert_has_calls(calls)
+
+    def test_bind(self):
+        instance = Instance(
+            name="name",
+            plan='basic',
+            endpoints=[
+                {"host": "localhost", "port": "4242", "container_id": "12"},
+                {"host": "host.com", "port": "422", "container_id": "12"},
+            ],
+        )
+        result = self.manager.bind(instance)
+        expected_redis = ['localhost:4242', 'host.com:422']
+        expected_sentinels = [
+            u'http://host1.com:4243',
+            u'http://localhost:4243',
+            u'http://host2.com:4243'
+        ]
+        self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
+        self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
