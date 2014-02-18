@@ -92,6 +92,7 @@ class DockerManagerTest(unittest.TestCase):
 
     def test_add_instance(self):
         add_mock = mock.Mock()
+        self.manager.config_sentinels = mock.Mock()
         self.manager.health_checker.return_value = add_mock
         self.manager.client = mock.Mock(base_url="http://localhost:4243")
         self.manager.client().create_container.return_value = {"Id": "12"}
@@ -117,8 +118,12 @@ class DockerManagerTest(unittest.TestCase):
         self.assertEqual(endpoint["port"], u"49154")
         self.assertEqual(instance.plan, "basic")
 
+        self.manager.config_sentinels.assert_called_with(
+            "name", endpoint)
+
     def test_remove_instance(self):
         remove_mock = mock.Mock()
+        self.manager.remove_from_sentinel = mock.Mock()
         self.manager.health_checker.return_value = remove_mock
         instance = Instance(
             name="name",
@@ -135,6 +140,8 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.client().remove_container.assert_called(
             instance.endpoints[0]["container_id"])
         self.storage.remove_instance(instance)
+        self.manager.remove_from_sentinel.assert_called_with(
+            instance.name)
 
     def test_bind(self):
         instance = Instance(

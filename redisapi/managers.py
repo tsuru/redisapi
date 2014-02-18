@@ -144,13 +144,14 @@ class DockerManager(DockerBase):
         container = client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         host = self.extract_hostname(self.client.base_url)
+        endpoint = {"host": host, "port": port, "container_id": output["Id"]}
         instance = Instance(
             name=instance_name,
             plan='basic',
-            endpoints=[{"host": host, "port": port,
-                        "container_id": output["Id"]}],
+            endpoints=[endpoint],
         )
         self.health_checker().add(host, port)
+        self.config_sentinels(instance_name, endpoint)
         return instance
 
     def bind(self, instance):
@@ -174,6 +175,7 @@ class DockerManager(DockerBase):
         client.stop(endpoint["container_id"])
         client.remove_container(endpoint["container_id"])
         self.health_checker().remove(endpoint["host"], endpoint["port"])
+        self.remove_from_sentinel(instance.name)
 
 
 class FakeManager(object):
