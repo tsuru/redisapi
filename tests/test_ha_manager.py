@@ -190,3 +190,4 @@ class DockerHaManagerTest(unittest.TestCase):
         ]
         self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
         self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
+        self.assertEqual(result['REDIS_MASTER'], instance.name)

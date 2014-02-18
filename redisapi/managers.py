@@ -125,6 +125,7 @@ class DockerHaManager(DockerBase):
         return {
             "SENTINEL_HOSTS": self.sentinel_hosts,
             "REDIS_HOSTS": redis_hosts,
+            "REDIS_MASTER": instance.name,
         }
 
 
