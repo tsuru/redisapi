@@ -15,6 +15,14 @@ from storage import Instance
 
 
 class DockerBase(object):
+
+    def __init__(self):
+        self.image_name = get_value("REDIS_IMAGE")
+        docker_hosts = get_value("DOCKER_HOSTS")
+        sentinel_hosts = get_value("SENTINEL_HOSTS")
+        self.sentinel_hosts = json.loads(sentinel_hosts)
+        self.docker_hosts = json.loads(docker_hosts)
+
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")
         return health_checkers[hc_name]()
@@ -33,13 +41,6 @@ class DockerBase(object):
 
 
 class DockerHaManager(DockerBase):
-
-    def __init__(self):
-        self.image_name = get_value("REDIS_IMAGE")
-        docker_hosts = get_value("DOCKER_HOSTS")
-        sentinel_hosts = get_value("SENTINEL_HOSTS")
-        self.sentinel_hosts = json.loads(sentinel_hosts)
-        self.docker_hosts = json.loads(docker_hosts)
 
     def client(self, host):
         return docker.Client(base_url=host)
@@ -130,12 +131,6 @@ class DockerHaManager(DockerBase):
 
 
 class DockerManager(DockerBase):
-    def __init__(self):
-        self.image_name = get_value("REDIS_IMAGE")
-        docker_hosts = get_value("DOCKER_HOSTS")
-        self.docker_hosts = json.loads(docker_hosts)
-        sentinel_hosts = get_value("SENTINEL_HOSTS")
-        self.sentinel_hosts = json.loads(sentinel_hosts)
 
     def client(self, host=None):
         if not host:
