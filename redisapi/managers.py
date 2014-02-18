@@ -14,7 +14,25 @@ from utils import get_value
 from storage import MongoStorage, Instance
 
 
-class DockerHaManager(object):
+class DockerBase(object):
+    def health_checker(self):
+        hc_name = os.environ.get("HEALTH_CHECKER", "fake")
+        return health_checkers[hc_name]()
+
+    def extract_hostname(self, url):
+        return urlparse(url).hostname
+
+    def docker_url_from_hostname(self, hostname):
+        return "http://{}:4243".format(hostname)
+
+    def unbind(self):
+        pass
+
+    def is_ok(self):
+        pass
+
+
+class DockerHaManager(DockerBase):
 
     def __init__(self):
         self.image_name = get_value("REDIS_IMAGE")
@@ -23,18 +41,8 @@ class DockerHaManager(object):
         self.sentinel_hosts = json.loads(sentinel_hosts)
         self.docker_hosts = json.loads(docker_hosts)
 
-    def health_checker(self):
-        hc_name = os.environ.get("HEALTH_CHECKER", "fake")
-        return health_checkers[hc_name]()
-
     def client(self, host):
         return docker.Client(base_url=host)
-
-    def extract_hostname(self, url):
-        return urlparse(url).hostname
-
-    def docker_url_from_hostname(self, hostname):
-        return "http://{}:4243".format(hostname)
 
     def start_redis_container(self, name, host, slave_of=None):
         client = self.client(host)
@@ -120,7 +128,7 @@ class DockerHaManager(object):
         }
 
 
-class DockerManager(object):
+class DockerManager(DockerBase):
     def __init__(self):
         self.image_name = get_value("REDIS_IMAGE")
         docker_hosts = get_value("DOCKER_HOSTS")
@@ -132,16 +140,6 @@ class DockerManager(object):
         if not host:
             host = random.choice(self.docker_hosts)
         return docker.Client(base_url=host)
-
-    def health_checker(self):
-        hc_name = os.environ.get("HEALTH_CHECKER", "fake")
-        return health_checkers[hc_name]()
-
-    def extract_hostname(self, url):
-        return urlparse(url).hostname
-
-    def docker_url_from_hostname(self, hostname):
-        return "http://{}:4243".format(hostname)
 
     def add_instance(self, instance_name):
         client = self.client()
@@ -165,9 +163,6 @@ class DockerManager(object):
             "REDIS_PORT": instance.endpoints[0]["port"],
         }
 
-    def unbind(self):
-        pass
-
     def remove_instance(self, instance):
         endpoint = instance.endpoints[0]
         url = self.docker_url_from_hostname(endpoint["host"])
@@ -175,9 +170,6 @@ class DockerManager(object):
         client.stop(endpoint["container_id"])
         client.remove_container(endpoint["container_id"])
         self.health_checker().remove(endpoint["host"], endpoint["port"])
-
-    def is_ok(self):
-        pass
 
 
 class FakeManager(object):
