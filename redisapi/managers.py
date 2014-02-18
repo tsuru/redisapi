@@ -99,10 +99,13 @@ class DockerHaManager(object):
             client.remove_container(endpoint["container_id"])
             self.health_checker().remove(endpoint["host"], endpoint["port"])
 
-        self.remove_from_sentinel(instance.endpoints[0])
+        self.remove_from_sentinel(instance.name)
 
-    def remove_from_sentinel(self, master):
-        pass
+    def remove_from_sentinel(self, master_name):
+        for sentinel in self.sentinel_hosts:
+            host, port = sentinel.replace("http://", "").split(":")
+            r = redis.StrictRedis(host=host, port=port)
+            r.execute_command('sentinel remove {}'.format(master_name))
 
 
 class DockerManager(object):
