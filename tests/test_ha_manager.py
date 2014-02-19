@@ -91,7 +91,9 @@ class DockerHaManagerTest(unittest.TestCase):
         self.manager.health_checker.return_value = add_mock
         self.manager.slave_of = mock.Mock()
         self.manager.config_sentinels = mock.Mock()
-        self.manager.client = mock.Mock(base_url="http://localhost:4243")
+        client_mock = mock.Mock()
+        client_mock.return_value = mock.Mock(base_url="http://localhost:4243")
+        self.manager.client = client_mock
         self.manager.client().create_container.return_value = {"Id": "12"}
         self.manager.client().inspect_container.return_value = {
             'NetworkSettings': {

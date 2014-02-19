@@ -86,7 +86,7 @@ class DockerHaManager(DockerBase):
         container = client.inspect_container(output["Id"])
         ports = container['NetworkSettings']['Ports']
         port = ports['6379/tcp'][0]['HostPort']
-        host = self.extract_hostname(self.client.base_url)
+        host = self.extract_hostname(client.base_url)
         self.health_checker().add(host, port)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
         if slave_of:
@@ -143,7 +143,7 @@ class DockerManager(DockerBase):
         client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
         container = client.inspect_container(output["Id"])
         port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
-        host = self.extract_hostname(self.client.base_url)
+        host = self.extract_hostname(client.base_url)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
         instance = Instance(
             name=instance_name,
