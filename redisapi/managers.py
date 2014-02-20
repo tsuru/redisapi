@@ -28,21 +28,19 @@ class DockerBase(object):
             host, port = sentinel.replace("http://", "").split(":")
             r = redis.StrictRedis(host=str(host), port=str(port))
             commands = [
-                "sentinel monitor {} {} {} 1".format(
-                    master_name, master["host"], master["port"]),
-                "sentinel set {} down-after-milliseconds 5000".format(
-                    master_name),
-                "sentinel set {} failover-timeout 60000".format(master_name),
-                "sentinel set {} parallel-syncs 1".format(master_name),
+                ["monitor", master_name, master["host"], master["port"], '1'],
+                ["set", master_name, "down-after-milliseconds", "5000"],
+                ["set", master_name, "failover-timeout", "60000"],
+                ["set", master_name, "parallel-syncs", "1"],
             ]
             for command in commands:
-                r.execute_command(command)
+                r.sentinel(*command)
 
     def remove_from_sentinel(self, master_name):
         for sentinel in self.sentinel_hosts:
             host, port = sentinel.replace("http://", "").split(":")
             r = redis.StrictRedis(host=str(host), port=str(port))
-            r.execute_command('sentinel remove {}'.format(master_name))
+            r.sentinel('remove', master_name)
 
     def health_checker(self):
         hc_name = os.environ.get("HEALTH_CHECKER", "fake")

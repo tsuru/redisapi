@@ -193,14 +193,14 @@ class DockerManagerTest(unittest.TestCase):
             host, port = sentinel["host"], sentinel["port"]
             sentinel_calls = [
                 mock.call(host=host, port=port),
-                mock.call().execute_command(
-                    'sentinel monitor master_name localhost 3333 1'),
-                mock.call().execute_command(
-                    'sentinel set master_name down-after-milliseconds 5000'),
-                mock.call().execute_command(
-                    'sentinel set master_name failover-timeout 60000'),
-                mock.call().execute_command(
-                    'sentinel set master_name parallel-syncs 1'),
+                mock.call().sentinel(
+                    'monitor', 'master_name', 'localhost', '3333', '1'),
+                mock.call().sentinel(
+                    'set', 'master_name', 'down-after-milliseconds', '5000'),
+                mock.call().sentinel(
+                    'set', 'master_name', 'failover-timeout', '60000'),
+                mock.call().sentinel(
+                    'set', 'master_name', 'parallel-syncs', '1'),
             ]
             calls.extend(sentinel_calls)
 
@@ -220,8 +220,8 @@ class DockerManagerTest(unittest.TestCase):
             host, port = sentinel["host"], sentinel["port"]
             sentinel_calls = [
                 mock.call(host=host, port=port),
-                mock.call().execute_command(
-                    'sentinel remove master_name'),
+                mock.call().sentinel(
+                    'remove', 'master_name'),
             ]
             calls.extend(sentinel_calls)
 
