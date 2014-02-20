@@ -95,7 +95,7 @@ class DockerHaManager(DockerBase):
 
     def slave_of(self, master, slave):
         r = redis.StrictRedis(host=str(slave["host"]), port=str(["port"]))
-        r.slave_of(master["host"], master["port"])
+        r.slave_for(master["host"], master["port"])
 
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
