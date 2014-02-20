@@ -26,7 +26,7 @@ class DockerBase(object):
     def config_sentinels(self, master_name, master):
         for sentinel in self.sentinel_hosts:
             host, port = sentinel.replace("http://", "").split(":")
-            r = redis.StrictRedis(host=host, port=port)
+            r = redis.StrictRedis(host=str(host), port=str(port))
             commands = [
                 "sentinel monitor {} {} {} 1".format(
                     master_name, master["host"], master["port"]),
@@ -41,7 +41,7 @@ class DockerBase(object):
     def remove_from_sentinel(self, master_name):
         for sentinel in self.sentinel_hosts:
             host, port = sentinel.replace("http://", "").split(":")
-            r = redis.StrictRedis(host=host, port=port)
+            r = redis.StrictRedis(host=str(host), port=str(port))
             r.execute_command('sentinel remove {}'.format(master_name))
 
     def health_checker(self):
@@ -96,7 +96,7 @@ class DockerHaManager(DockerBase):
         return endpoint
 
     def slave_of(self, master, slave):
-        r = redis.StrictRedis(host=slave["host"], port=["port"])
+        r = redis.StrictRedis(host=str(slave["host"]), port=str(["port"]))
         r.slave_of(master["host"], master["port"])
 
     def add_instance(self, instance_name):
