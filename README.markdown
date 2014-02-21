@@ -5,7 +5,15 @@
 This API exposes a Redis service to application developers using [tsuru
 PaaS](http://tsuru.io).
 
-##Installation and configuration
+##Installation
+
+The `redisapi` uses `mongodb` to store data about redis instances, and uses `docker` to spawn redis instances.
+
+To install the api, all you need is a machine with `python` and `pip` installed. Clone the `redisapi` enter on directory create and then run: 
+
+    pip install -r requirements.txt
+
+##Configuration
 
 This API is ready for being deployed as a tsuru application. It depends on the
 following environment variables:
