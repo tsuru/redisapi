@@ -31,3 +31,9 @@ following environment variables:
   a private IP, the private IP is used by the API to manage the server, and the
   public API is delivered to apps whenever tsuru binds it to a service
   instance. _Default value:_ the value of ``$REDIS_SERVER_HOST``.
+
+##Healtchecker
+
+The `redisapi` has a module that creates healtcheckers for the redis instances created by the api. By default
+the healthchecker is disabled. To enable it you should set the environment variable `HEALTH_CHECKER` with the
+name of monitoring tool that you wants to use. Currently only`zabbix` is supported.
