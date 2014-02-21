@@ -83,7 +83,7 @@ class DockerHaManagerTest(unittest.TestCase):
         slave = {"host": "myhost", "port": "9999"}
         self.manager.slave_of(master, slave)
         redis_mock.assert_called_with(
-            host=str(slave["host"]), port=str(["port"]))
+            host=str(slave["host"]), port=str(slave["port"]))
         redis_instance_mock.slaveof.assert_called_with(
             master["host"], master["port"])
 
