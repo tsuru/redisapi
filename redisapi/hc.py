@@ -51,7 +51,7 @@ class ZabbixHealthCheck(object):
         )
         trigger_result = self.zapi.trigger.create(
             description="trigger hc for redis {}:{}".format(host, port),
-            expression="{{Zabbix Server:{}.last()}}=1".format(item_key),
+            expression="{{Zabbix Server:{}.last()}}#1".format(item_key),
             priority=5,
         )
         item = {
