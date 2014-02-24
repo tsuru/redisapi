@@ -113,7 +113,7 @@ class DockerHaManager(DockerBase):
 
         return Instance(
             name=instance_name,
-            plan='basic',
+            plan='plus',
             endpoints=endpoints,
         )
 

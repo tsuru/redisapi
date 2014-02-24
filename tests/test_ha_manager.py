@@ -119,7 +119,7 @@ class DockerHaManagerTest(unittest.TestCase):
         ]
         self.assertEqual(instance.name, "name")
         self.assertListEqual(instance.endpoints, expected_endpoints)
-        self.assertEqual(instance.plan, "basic")
+        self.assertEqual(instance.plan, "plus")
 
         self.manager.slave_of.assert_called_with(*expected_endpoints)
         self.manager.config_sentinels.assert_called_with(
