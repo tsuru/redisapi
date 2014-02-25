@@ -119,11 +119,11 @@ class DockerHaManager(DockerBase):
 
     def remove_instance(self, instance):
         for endpoint in instance.endpoints:
+            self.health_checker().remove(endpoint["host"], endpoint["port"])
             url = self.docker_url_from_hostname(endpoint["host"])
             client = self.client(url)
             client.stop(endpoint["container_id"])
             client.remove_container(endpoint["container_id"])
-            self.health_checker().remove(endpoint["host"], endpoint["port"])
 
         self.remove_from_sentinel(instance.name)
 
@@ -168,11 +168,11 @@ class DockerManager(DockerBase):
 
     def remove_instance(self, instance):
         endpoint = instance.endpoints[0]
+        self.health_checker().remove(endpoint["host"], endpoint["port"])
         url = self.docker_url_from_hostname(endpoint["host"])
         client = self.client(url)
         client.stop(endpoint["container_id"])
         client.remove_container(endpoint["container_id"])
-        self.health_checker().remove(endpoint["host"], endpoint["port"])
         self.remove_from_sentinel(instance.name)
 
 
