@@ -195,3 +195,6 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
         self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
         self.assertEqual(result['REDIS_MASTER'], instance.name)
+
+    def test_port_range_start(self):
+        self.assertEqual(49153, self.manager.port_range_start)

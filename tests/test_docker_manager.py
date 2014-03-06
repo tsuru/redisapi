@@ -226,3 +226,6 @@ class DockerManagerTest(unittest.TestCase):
             calls.extend(sentinel_calls)
 
         redis_mock.assert_has_calls(calls)
+
+    def test_port_range_start(self):
+        self.assertEqual(49153, self.manager.port_range_start)

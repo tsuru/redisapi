@@ -22,6 +22,7 @@ class DockerBase(object):
         sentinel_hosts = get_value("SENTINEL_HOSTS")
         self.sentinel_hosts = json.loads(sentinel_hosts)
         self.docker_hosts = json.loads(docker_hosts)
+        self.port_range_start = 49153
 
     def config_sentinels(self, master_name, master):
         for sentinel in self.sentinel_hosts:
