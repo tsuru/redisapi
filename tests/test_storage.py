@@ -54,30 +54,17 @@ class MongoStorageTest(unittest.TestCase):
             del os.environ[env]
 
     @mock.patch("pymongo.MongoClient")
-    def test_mongodb_host_environ(self, mongo_mock):
+    def test_mongodb_uri_environ(self, mongo_mock):
         from redisapi.storage import MongoStorage
         storage = MongoStorage()
         storage.conn()
-        mongo_mock.assert_called_with(host="localhost", port=27017)
+        mongo_mock.assert_called_with("mongodb://localhost:27017/")
 
-        os.environ["MONGODB_HOST"] = "0.0.0.0"
-        self.addCleanup(self.remove_env, "MONGODB_HOST")
+        os.environ["MONGODB_URI"] = "0.0.0.0"
+        self.addCleanup(self.remove_env, "MONGODB_URI")
         storage = MongoStorage()
         storage.conn()
-        mongo_mock.assert_called_with(host="0.0.0.0", port=27017)
-
-    @mock.patch("pymongo.MongoClient")
-    def test_mongodb_port_environ(self, mongo_mock):
-        from redisapi.storage import MongoStorage
-        storage = MongoStorage()
-        storage.conn()
-        mongo_mock.assert_called_with(host='localhost', port=27017)
-
-        os.environ["MONGODB_PORT"] = "3333"
-        self.addCleanup(self.remove_env, "MONGODB_PORT")
-        storage = MongoStorage()
-        storage.conn()
-        mongo_mock.assert_called_with(host='localhost', port=3333)
+        mongo_mock.assert_called_with("0.0.0.0")
 
     def test_add_instance(self):
         from redisapi.storage import MongoStorage

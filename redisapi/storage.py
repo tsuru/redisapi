@@ -23,11 +23,11 @@ class Instance(object):
 class MongoStorage(object):
 
     def conn(self):
-        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
-        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
+        mongodb_uri = os.environ.get(
+            "MONGODB_URI", "mongodb://localhost:27017/")
 
         from pymongo import MongoClient
-        return MongoClient(host=mongodb_host, port=mongodb_port)
+        return MongoClient(mongodb_uri)
 
     def add_instance(self, instance):
         self.conn()['redisapi']['instances'].insert(instance.to_json())
