@@ -40,6 +40,19 @@ class MongoStorage(object):
             endpoints=result['endpoints'],
         )
 
+    def find_instances_by_host(self, host):
+        result = self.conn()['redisapi']['instances'].find(
+            {"endpoints.host": host})
+        instances = []
+        for item in result:
+            instance = Instance(
+                name=item['name'],
+                plan=item['plan'],
+                endpoints=item['endpoints'],
+            )
+            instances.append(instance)
+        return instances
+
     def remove_instance(self, instance):
         return self.conn()['redisapi']['instances'].remove(
             {"name": instance.name})

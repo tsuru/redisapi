@@ -90,6 +90,18 @@ class MongoStorageTest(unittest.TestCase):
                          result.endpoints[0]["container_id"])
         storage.remove_instance(instance)
 
+    def test_find_instances_by_host(self):
+        from redisapi.storage import MongoStorage
+        storage = MongoStorage()
+        instance = Instance(
+            "xname", "plan", [{"host": "host", "container_id": "id",
+                               "port": "port"}])
+        storage.add_instance(instance)
+        result = storage.find_instances_by_host("host")
+        self.assertEqual(instance.endpoints[0]["container_id"],
+                         result[0].endpoints[0]["container_id"])
+        storage.remove_instance(instance)
+
     def test_remove_instance(self):
         from redisapi.storage import MongoStorage
         storage = MongoStorage()

@@ -230,5 +230,8 @@ class DockerManagerTest(unittest.TestCase):
     def test_port_range_start(self):
         self.assertEqual(49153, self.manager.port_range_start)
 
-    def test_get_port(self):
+    def test_get_port_new_host(self):
+        self.assertEqual(49153, self.manager.get_port_by_host("newhost"))
+
+    def test_get_port_host_with_containers(self):
         self.assertEqual(49153, self.manager.get_port_by_host("newhost"))
