@@ -11,7 +11,7 @@ import random
 from urlparse import urlparse
 from hc import health_checkers
 from utils import get_value
-from storage import Instance
+from storage import Instance, MongoStorage
 
 
 class DockerBase(object):
@@ -25,6 +25,14 @@ class DockerBase(object):
         self.port_range_start = 49153
 
     def get_port_by_host(self, host):
+        storage = MongoStorage()
+        instances = storage.find_instances_by_host(host)
+        if instances:
+            ports = []
+            for instance in instances:
+                for endpoint in instance.endpoints:
+                    ports.append(int(endpoint["port"]))
+            return max(ports) + 1
         return self.port_range_start
 
     def config_sentinels(self, master_name, master):

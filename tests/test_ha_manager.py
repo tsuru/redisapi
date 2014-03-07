@@ -201,3 +201,13 @@ class DockerHaManagerTest(unittest.TestCase):
 
     def test_get_port(self):
         self.assertEqual(49153, self.manager.get_port_by_host("newhost"))
+
+    def test_get_port_host_with_containers(self):
+        instance = Instance(
+            name="name",
+            plan="basic",
+            endpoints=[{"host": "newhost", "port": 49153,
+                        "container_id": "12"}],
+        )
+        self.storage.add_instance(instance)
+        self.assertEqual(49154, self.manager.get_port_by_host("newhost"))
