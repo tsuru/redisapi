@@ -91,11 +91,14 @@ class DockerHaManager(DockerBase):
 
     def start_redis_container(self, name, host, slave_of=None):
         client = self.client(host)
-        output = client.create_container(self.image_name, command="")
-        client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
-        container = client.inspect_container(output["Id"])
-        ports = container['NetworkSettings']['Ports']
-        port = ports['6379/tcp'][0]['HostPort']
+        port = self.get_port_by_host(host)
+        output = client.create_container(
+            self.image_name,
+            command="",
+            ports=[port],
+            environment={"REDIS_PORT": port},
+        )
+        client.start(output["Id"], port_bindings={port: ('0.0.0.0', port)})
         host = self.extract_hostname(client.base_url)
         self.health_checker().add(host, port)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
@@ -149,11 +152,15 @@ class DockerManager(DockerBase):
 
     def add_instance(self, instance_name):
         client = self.client()
-        output = client.create_container(self.image_name, command="")
-        client.start(output["Id"], port_bindings={6379: ('0.0.0.0',)})
-        container = client.inspect_container(output["Id"])
-        port = container['NetworkSettings']['Ports']['6379/tcp'][0]['HostPort']
         host = self.extract_hostname(client.base_url)
+        port = self.get_port_by_host(host)
+        output = client.create_container(
+            self.image_name,
+            command="",
+            ports=[port],
+            environment={"REDIS_PORT": port},
+        )
+        client.start(output["Id"], port_bindings={port: ('0.0.0.0', port)})
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
         instance = Instance(
             name=instance_name,

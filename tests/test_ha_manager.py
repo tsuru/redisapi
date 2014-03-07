@@ -92,6 +92,8 @@ class DockerHaManagerTest(unittest.TestCase):
         self.manager.health_checker = mock.Mock()
         self.manager.health_checker.return_value = add_mock
         self.manager.slave_of = mock.Mock()
+        self.manager.get_port_by_host = mock.Mock()
+        self.manager.get_port_by_host.return_value = 49153
         self.manager.config_sentinels = mock.Mock()
         client_mock = mock.Mock()
         client_mock.return_value = mock.Mock(base_url="http://localhost:4243")
@@ -107,15 +109,17 @@ class DockerHaManagerTest(unittest.TestCase):
         self.manager.client().create_container.assert_called_with(
             self.manager.image_name,
             command="",
+            environment={'REDIS_PORT': 49153},
+            ports=[49153]
         )
         self.manager.client().start.assert_called_with(
             "12",
-            port_bindings={6379: ('0.0.0.0',)}
+            port_bindings={49153: ('0.0.0.0', 49153)}
         )
-        add_mock.add.assert_called_with("localhost", u"49154")
+        add_mock.add.assert_called_with("localhost", 49153)
         expected_endpoints = [
-            {"container_id": "12", "host": "localhost", "port": "49154"},
-            {"container_id": "12", "host": "localhost", "port": "49154"},
+            {"container_id": "12", "host": "localhost", "port": 49153},
+            {"container_id": "12", "host": "localhost", "port": 49153},
         ]
         self.assertEqual(instance.name, "name")
         self.assertListEqual(instance.endpoints, expected_endpoints)

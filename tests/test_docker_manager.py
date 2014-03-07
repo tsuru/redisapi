@@ -107,17 +107,19 @@ class DockerManagerTest(unittest.TestCase):
         self.manager.client().create_container.assert_called_with(
             self.manager.image_name,
             command="",
+            environment={'REDIS_PORT': 49153},
+            ports=[49153]
         )
         self.manager.client().start.assert_called_with(
             "12",
-            port_bindings={6379: ('0.0.0.0',)}
+            port_bindings={49153: ('0.0.0.0', 49153)}
         )
-        add_mock.add.assert_called_with("localhost", u"49154")
+        add_mock.add.assert_called_with("localhost", 49153)
         endpoint = instance.endpoints[0]
         self.assertEqual(instance.name, "name")
         self.assertEqual(endpoint["container_id"], "12")
         self.assertEqual(endpoint["host"], "localhost")
-        self.assertEqual(endpoint["port"], u"49154")
+        self.assertEqual(endpoint["port"], 49153)
         self.assertEqual(instance.plan, "basic")
 
         self.manager.config_sentinels.assert_called_with(
