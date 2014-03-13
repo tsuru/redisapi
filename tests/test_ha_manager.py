@@ -5,6 +5,7 @@
 import mock
 import os
 import unittest
+import json
 
 from redisapi.hc import FakeHealthCheck
 from redisapi.managers import DockerHaManager
@@ -190,14 +191,14 @@ class DockerHaManagerTest(unittest.TestCase):
             ],
         )
         result = self.manager.bind(instance)
-        expected_redis = ['localhost:4242', 'host.com:422']
-        expected_sentinels = [
+        expected_redis = json.dumps(['localhost:4242', 'host.com:422'])
+        expected_sentinels = json.dumps([
             u'http://host1.com:4243',
             u'http://localhost:4243',
             u'http://host2.com:4243'
-        ]
-        self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
-        self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
+        ])
+        self.assertEqual(result['REDIS_HOSTS'], expected_redis)
+        self.assertEqual(result['SENTINEL_HOSTS'], expected_sentinels)
         self.assertEqual(result['REDIS_MASTER'], instance.name)
 
     def test_port_range_start(self):

@@ -5,6 +5,7 @@
 import unittest
 import mock
 import os
+import json
 
 from redisapi.storage import Instance, MongoStorage
 
@@ -159,14 +160,14 @@ class DockerManagerTest(unittest.TestCase):
 
         self.assertEqual(result['REDIS_HOST'], "localhost")
         self.assertEqual(result['REDIS_PORT'], "4242")
-        expected_redis = ['localhost:4242']
-        expected_sentinels = [
+        expected_redis = json.dumps(['localhost:4242'])
+        expected_sentinels = json.dumps([
             u'http://host1.com:4243',
             u'http://localhost:4243',
             u'http://host2.com:4243'
-        ]
-        self.assertListEqual(result['REDIS_HOSTS'], expected_redis)
-        self.assertListEqual(result['SENTINEL_HOSTS'], expected_sentinels)
+        ])
+        self.assertEqual(result['REDIS_HOSTS'], expected_redis)
+        self.assertEqual(result['SENTINEL_HOSTS'], expected_sentinels)
         self.assertEqual(result['REDIS_MASTER'], instance.name)
 
     def test_running_without_the_REDIS_IMAGE_variable(self):

@@ -75,8 +75,8 @@ class DockerBase(object):
                 endpoint["host"], endpoint["port"]))
 
         return {
-            "SENTINEL_HOSTS": self.sentinel_hosts,
-            "REDIS_HOSTS": redis_hosts,
+            "SENTINEL_HOSTS": json.dumps(self.sentinel_hosts),
+            "REDIS_HOSTS": json.dumps(redis_hosts),
             "REDIS_MASTER": instance.name,
         }
 
