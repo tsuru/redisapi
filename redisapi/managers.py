@@ -175,7 +175,7 @@ class DockerManager(DockerBase):
         envs = super(DockerManager, self).bind(instance)
         envs.update({
             "REDIS_HOST": instance.endpoints[0]["host"],
-            "REDIS_PORT": instance.endpoints[0]["port"],
+            "REDIS_PORT": str(instance.endpoints[0]["port"]),
             })
         return envs
 

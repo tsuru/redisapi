@@ -151,7 +151,7 @@ class DockerManagerTest(unittest.TestCase):
         instance = Instance(
             name="name",
             plan='basic',
-            endpoints=[{"host": "localhost", "port": "4242",
+            endpoints=[{"host": "localhost", "port": 4242,
                         "container_id": "12"}],
         )
 
