@@ -173,12 +173,6 @@ class DockerManager(DockerBase):
 
     def bind(self, instance):
         envs = super(DockerManager, self).bind(instance)
-        redis_hosts = []
-
-        for endpoint in instance.endpoints:
-            redis_hosts.append("{}:{}".format(
-                endpoint["host"], endpoint["port"]))
-
         envs.update({
             "REDIS_HOST": instance.endpoints[0]["host"],
             "REDIS_PORT": instance.endpoints[0]["port"],
