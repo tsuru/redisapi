@@ -39,7 +39,7 @@ class ZabbixHealthCheck(object):
         return MongoClient(host=mongodb_host, port=mongodb_port)
 
     def add(self, host, port):
-        item_key = "net.tcp.service[telnet,{},{}]".format(host, port)
+        item_key = "net.tcp.service[tcp,{},{}]".format(host, port)
         item_result = self.zapi.item.create(
             name="redis healthcheck for {}:{}".format(host, port),
             key_=item_key,
@@ -51,7 +51,7 @@ class ZabbixHealthCheck(object):
         )
         trigger_result = self.zapi.trigger.create(
             description="trigger hc for redis {}:{}".format(host, port),
-            expression="{{Zabbix Server:{}.last()}}#1".format(item_key),
+            expression="{{Zabbix Server:{}.last()}}=0".format(item_key),
             priority=5,
         )
         item = {
