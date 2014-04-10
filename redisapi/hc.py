@@ -32,11 +32,11 @@ class ZabbixHealthCheck(object):
         self.items = self.mongo()['redisapi']['zabbix']
 
     def mongo(self):
-        mongodb_host = os.environ.get("MONGODB_HOST", "localhost")
-        mongodb_port = int(os.environ.get("MONGODB_PORT", 27017))
+        mongodb_uri = os.environ.get(
+            "MONGODB_URI", "mongodb://localhost:27017/")
 
         from pymongo import MongoClient
-        return MongoClient(host=mongodb_host, port=mongodb_port)
+        return MongoClient(mongodb_uri)
 
     def add(self, host, port):
         item_key = "net.tcp.service[tcp,{},{}]".format(host, port)
