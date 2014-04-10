@@ -107,6 +107,8 @@ class DockerHaManagerTest(unittest.TestCase):
 
         instance = self.manager.add_instance("name")
 
+        self.manager.get_port_by_host.assert_called_with("localhost")
+
         self.manager.client().create_container.assert_called_with(
             self.manager.image_name,
             command="",

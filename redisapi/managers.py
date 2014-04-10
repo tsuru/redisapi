@@ -91,6 +91,7 @@ class DockerHaManager(DockerBase):
 
     def start_redis_container(self, name, host, slave_of=None):
         client = self.client(host)
+        host = self.extract_hostname(client.base_url)
         port = self.get_port_by_host(host)
         output = client.create_container(
             self.image_name,
@@ -99,7 +100,6 @@ class DockerHaManager(DockerBase):
             environment={"REDIS_PORT": port},
         )
         client.start(output["Id"], port_bindings={port: ('0.0.0.0', port)})
-        host = self.extract_hostname(client.base_url)
         self.health_checker().add(host, port)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
         if slave_of:
