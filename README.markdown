@@ -1,6 +1,6 @@
 #redis-api
 
-[![Build Status](https://travis-ci.org/globocom/redis-api.png?branch=master)](https://travis-ci.org/globocom/redis-api)
+[![Build Status](https://travis-ci.org/tsuru/redis-api.png?branch=master)](https://travis-ci.org/tsuru/redis-api)
 
 This API exposes a Redis service to application developers using [tsuru
 PaaS](http://tsuru.io).
