@@ -16,7 +16,7 @@ class PlansTest(unittest.TestCase):
             {"name": "basic",
              "description": "Is a dedicated instance. With 1GB of memory."},
             {"name": "plus",
-             "description": "Is 3 dedicated instances. With 1GB of memory and \
+             "description": "Is 2 dedicated instances. With 1GB of memory and \
 HA and failover support via redis-sentinel."},
         ]
         self.assertListEqual(expected, plans.plans)
