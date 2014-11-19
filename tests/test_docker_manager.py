@@ -36,7 +36,7 @@ class DockerManagerTest(unittest.TestCase):
         self.storage = MongoStorage()
 
     def tearDown(self):
-        self.storage.conn()['redisapi']['instances'].remove()
+        self.storage.db().instances.remove()
 
     def test_client(self):
         os.environ["DOCKER_HOSTS"] = '["http://host1.com:4243", \

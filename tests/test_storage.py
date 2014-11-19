@@ -57,13 +57,13 @@ class MongoStorageTest(unittest.TestCase):
     def test_mongodb_uri_environ(self, mongo_mock):
         from redisapi.storage import MongoStorage
         storage = MongoStorage()
-        storage.conn()
+        storage.db()
         mongo_mock.assert_called_with("mongodb://localhost:27017/")
 
         os.environ["MONGODB_URI"] = "0.0.0.0"
         self.addCleanup(self.remove_env, "MONGODB_URI")
         storage = MongoStorage()
-        storage.conn()
+        storage.db()
         mongo_mock.assert_called_with("0.0.0.0")
 
     def test_add_instance(self):
@@ -114,6 +114,6 @@ class MongoStorageTest(unittest.TestCase):
         self.assertEqual(endpoint["container_id"],
                          result.endpoints[0]["container_id"])
         storage.remove_instance(instance)
-        length = storage.conn()['redisapi']['instances'].find(
+        length = storage.db()['redisapi']['instances'].find(
             {"name": instance.name}).count()
         self.assertEqual(length, 0)
