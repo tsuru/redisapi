@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-import json
+import json, os
 import flask
 
 from flask import request
@@ -12,6 +12,7 @@ from storage import MongoStorage
 
 
 app = flask.Flask(__name__)
+app.debug = os.environ.get('DEBUG', False)
 
 
 def manager_by_instance(instance):
