@@ -31,10 +31,10 @@ class MongoStorage(object):
         return MongoClient(mongodb_uri)[database_name]
 
     def add_instance(self, instance):
-        self.db()['instances'].insert(instance.to_json())
+        self.db().instances.insert(instance.to_json())
 
     def find_instance_by_name(self, name):
-        result = self.db()['instances'].find_one({"name": name})
+        result = self.db().instances.find_one({"name": name})
         return Instance(
             name=result['name'],
             plan=result['plan'],
@@ -42,18 +42,14 @@ class MongoStorage(object):
         )
 
     def find_instances_by_host(self, host):
-        result = self.db()['instances'].find(
-            {"endpoints.host": host})
+        result = self.db().instances.find({"endpoints.host": host})
         instances = []
         for item in result:
-            instance = Instance(
-                name=item['name'],
-                plan=item['plan'],
-                endpoints=item['endpoints'],
-            )
+            instance = Instance(name=item['name'],
+                                plan=item['plan'],
+                                endpoints=item['endpoints'])
             instances.append(instance)
         return instances
 
     def remove_instance(self, instance):
-        return self.db()['instances'].remove(
-            {"name": instance.name})
+        return self.db().instances.remove({"name": instance.name})
