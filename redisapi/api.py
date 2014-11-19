@@ -12,7 +12,7 @@ from storage import MongoStorage
 
 
 app = flask.Flask(__name__)
-app.debug = os.environ.get('DEBUG', False)
+app.debug = os.environ.get('DEBUG', '0') in ('true', 'True', '1')
 
 
 def manager_by_instance(instance):
