@@ -22,18 +22,19 @@ class Instance(object):
 
 class MongoStorage(object):
 
-    def conn(self):
+    def db(self):
         mongodb_uri = os.environ.get(
             "MONGODB_URI", "mongodb://localhost:27017/")
+        database_name = os.environ.get("DATABASE_NAME", "redisapi")
 
         from pymongo import MongoClient
-        return MongoClient(mongodb_uri)
+        return MongoClient(mongodb_uri)[database_name]
 
     def add_instance(self, instance):
-        self.conn()['redisapi']['instances'].insert(instance.to_json())
+        self.db()['instances'].insert(instance.to_json())
 
     def find_instance_by_name(self, name):
-        result = self.conn()['redisapi']['instances'].find_one({"name": name})
+        result = self.db()['instances'].find_one({"name": name})
         return Instance(
             name=result['name'],
             plan=result['plan'],
@@ -41,7 +42,7 @@ class MongoStorage(object):
         )
 
     def find_instances_by_host(self, host):
-        result = self.conn()['redisapi']['instances'].find(
+        result = self.db()['instances'].find(
             {"endpoints.host": host})
         instances = []
         for item in result:
@@ -54,5 +55,5 @@ class MongoStorage(object):
         return instances
 
     def remove_instance(self, instance):
-        return self.conn()['redisapi']['instances'].remove(
+        return self.db()['instances'].remove(
             {"name": instance.name})
