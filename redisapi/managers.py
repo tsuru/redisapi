@@ -7,6 +7,7 @@ import json
 import redis
 import docker
 import random
+import time
 
 from urlparse import urlparse
 from hc import health_checkers
@@ -102,6 +103,7 @@ class DockerHaManager(DockerBase):
         client.start(output["Id"], port_bindings={port: ('0.0.0.0', port)})
         self.health_checker().add(host, port)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
+        time.sleep(3)
         if slave_of:
             self.slave_of(slave_of, endpoint)
         else:
@@ -176,7 +178,7 @@ class DockerManager(DockerBase):
         envs.update({
             "REDIS_HOST": instance.endpoints[0]["host"],
             "REDIS_PORT": str(instance.endpoints[0]["port"]),
-            })
+        })
         return envs
 
     def remove_instance(self, instance):
