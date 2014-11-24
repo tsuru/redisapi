@@ -103,7 +103,6 @@ class DockerHaManager(DockerBase):
         client.start(output["Id"], port_bindings={port: ('0.0.0.0', port)})
         self.health_checker().add(host, port)
         endpoint = {"host": host, "port": port, "container_id": output["Id"]}
-        time.sleep(3)
         if slave_of:
             self.slave_of(slave_of, endpoint)
         else:
@@ -112,7 +111,14 @@ class DockerHaManager(DockerBase):
 
     def slave_of(self, master, slave):
         r = redis.StrictRedis(host=str(slave["host"]), port=str(slave["port"]))
-        r.slaveof(master["host"], master["port"])
+        max_try = 3
+        while max_try > 0:
+            try:
+                r.slaveof(master["host"], master["port"])
+                break
+            except redis.ConnectionError:
+                time.sleep(1)
+                max_try -= 1
 
     def add_instance(self, instance_name):
         hosts = self.docker_hosts[:]
