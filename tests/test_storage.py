@@ -114,6 +114,6 @@ class MongoStorageTest(unittest.TestCase):
         self.assertEqual(endpoint["container_id"],
                          result.endpoints[0]["container_id"])
         storage.remove_instance(instance)
-        length = storage.db()['redisapi']['instances'].find(
+        length = storage.db()['instances'].find(
             {"name": instance.name}).count()
         self.assertEqual(length, 0)
