@@ -93,7 +93,7 @@ class RedisAPITestCase(unittest.TestCase):
         )
         storage.add_instance(instance)
         response = self.app.post(
-            "/resources/myinstance",
+            "/resources/myinstance/bind",
             data={"hostname": "something.tsuru.io"}
         )
         self.assertEqual(201, response.status_code)
@@ -104,7 +104,7 @@ class RedisAPITestCase(unittest.TestCase):
 
     def test_unbind(self):
         from redisapi import api
-        content, code = api.unbind("instance", "10.10.10.10")
+        content, code = api.unbind("instance")
         self.assertEqual(200, code)
         self.assertEqual("", content)
 
