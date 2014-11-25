@@ -24,6 +24,7 @@ class ZabbixHealthCheck(object):
         user = get_value("ZABBIX_USER")
         password = get_value("ZABBIX_PASSWORD")
         self.host_id = get_value("ZABBIX_HOST")
+        self.host_name = os.environ.get("ZABBIX_HOST_NAME", "Zabbix Server")
         self.interface_id = get_value("ZABBIX_INTERFACE")
         from pyzabbix import ZabbixAPI
         self.zapi = ZabbixAPI(url)
@@ -52,7 +53,7 @@ class ZabbixHealthCheck(object):
         )
         trigger_result = self.zapi.trigger.create(
             description="trigger hc for redis {}:{}".format(host, port),
-            expression="{{Zabbix Server:{}.last()}}=0".format(item_key),
+            expression="{{{}:{}.last()}}=0".format(self.host_name, item_key),
             priority=5,
         )
         item = {
