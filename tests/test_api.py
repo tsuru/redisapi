@@ -107,6 +107,16 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual("", response.data)
 
+    def test_bind_unit(self):
+        response = self.app.post("/resources/myinstance/bind")
+        self.assertEqual(201, response.status_code)
+        self.assertEqual("", response.data)
+
+    def test_unbind_unit(self):
+        response = self.app.delete("/resources/myinstance/bind")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("", response.data)
+
     @mock.patch("redisapi.api.manager_by_instance")
     def test_status(self, manager_mock):
         fake_manager = mock.Mock()
