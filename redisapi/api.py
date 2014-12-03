@@ -35,16 +35,16 @@ def manager_by_plan_name(plan_name):
     return plans[plan_name]()
 
 
-@app.route("/resources/<name>/bind", methods=["POST"])
-def bind(name):
+@app.route("/resources/<name>/bind-app", methods=["POST"])
+def bind_app(name):
     storage = MongoStorage()
     instance = storage.find_instance_by_name(name)
     result = manager_by_instance(instance).bind(instance)
     return json.dumps(result), 201
 
 
-@app.route("/resources/<name>/bind", methods=["DELETE"])
-def unbind(name):
+@app.route("/resources/<name>/bind-app", methods=["DELETE"])
+def unbind_app(name):
     FakeManager().unbind()
     return "", 200
 

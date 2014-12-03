@@ -83,7 +83,7 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual("", response.data)
         storage_mock.remove_instance.assert_called_with(instance_mock)
 
-    def test_bind(self):
+    def test_bind_app(self):
         storage = MongoStorage()
         instance = Instance(
             name='myinstance',
@@ -93,7 +93,7 @@ class RedisAPITestCase(unittest.TestCase):
         )
         storage.add_instance(instance)
         response = self.app.post(
-            "/resources/myinstance/bind",
+            "/resources/myinstance/bind-app",
             data={"hostname": "something.tsuru.io"}
         )
         self.assertEqual(201, response.status_code)
@@ -102,11 +102,10 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertDictEqual({"REDIS_HOST": endpoint["host"],
                               "REDIS_PORT": endpoint["port"]}, j)
 
-    def test_unbind(self):
-        from redisapi import api
-        content, code = api.unbind("instance")
-        self.assertEqual(200, code)
-        self.assertEqual("", content)
+    def test_unbind_app(self):
+        response = self.app.delete("/resources/myinstance/bind-app")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("", response.data)
 
     @mock.patch("redisapi.api.manager_by_instance")
     def test_status(self, manager_mock):
