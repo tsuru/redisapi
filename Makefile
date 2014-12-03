@@ -7,5 +7,5 @@ test-deps:
 	@pip install -r test_requirements.txt
 
 test: test-deps
-	@py.test -s .
+	@python -m unittest discover
 	@flake8 .
