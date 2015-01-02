@@ -1,6 +1,6 @@
-#redis-api
+#redisapi
 
-[![Build Status](https://travis-ci.org/tsuru/redis-api.png?branch=master)](https://travis-ci.org/tsuru/redis-api)
+[![Build Status](https://travis-ci.org/tsuru/redisapi.png?branch=master)](https://travis-ci.org/tsuru/redisapi)
 
 This API exposes a Redis service to application developers using [tsuru
 PaaS](http://tsuru.io).
@@ -9,7 +9,7 @@ PaaS](http://tsuru.io).
 
 The `redisapi` uses `mongodb` to store data about redis instances, and uses `docker` to spawn redis instances.
 
-To install the api, all you need is a machine with `python` and `pip` installed. Clone the `redisapi`, `cd` into the created directory and then run: 
+To install the api, all you need is a machine with `python` and `pip` installed. Clone the `redisapi`, `cd` into the created directory and then run:
 
     pip install -r requirements.txt
 
@@ -19,7 +19,7 @@ This API is ready to be deployed as a tsuru application. It depends on the
 following environment variables:
 
 * **REDIS_SERVER_HOST**: the address of the server to which the API will
-  provide access. _Default value:_ ``none``. redis-api will fail to start if
+  provide access. _Default value:_ ``none``. redisapi will fail to start if
   this variable is not defined.
 * **REDIS_SERVER_PORT**: port used to connect to the Redis server. _Default
   value:_ 6379.
