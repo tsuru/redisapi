@@ -1,4 +1,4 @@
-# Copyright 2014 redisapi authors. All rights reserved.
+# Copyright 2015 redisapi authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -10,6 +10,8 @@ import random
 import time
 
 from urlparse import urlparse
+
+from acl import access_managers
 from hc import health_checkers
 from utils import get_value
 from storage import Instance, MongoStorage
@@ -83,6 +85,19 @@ class DockerBase(object):
 
     def unbind(self):
         pass
+
+    def grant(self, instance, host):
+        self.access_manager.grant_access(instance, host)
+
+    def revoke(self, instance, host):
+        self.access_manager.revoke_access(instance, host)
+
+    @property
+    def access_manager(self):
+        manager_name = os.environ.get("REDISAPI_ACCESS_MANAGER", "default")
+        if manager_name not in access_managers:
+            manager_name = "default"
+        return access_managers.get(manager_name)
 
     def is_ok(self):
         pass
