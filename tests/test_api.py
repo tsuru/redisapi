@@ -70,6 +70,18 @@ class RedisAPITestCase(unittest.TestCase):
         manager.assert_called_with('basic')
         storage_mock.add_instance.assert_called_with(fake_instance)
 
+    def test_add_instance_with_no_plan(self):
+        response = self.app.post("/resources",
+                                 data={"name": "name"})
+        self.assertEqual(400, response.status_code)
+        self.assertEqual("plan is required", response.data)
+
+    def test_add_instance_with_empty_plan(self):
+        response = self.app.post("/resources",
+                                 data={"name": "name", "plan": ""})
+        self.assertEqual(400, response.status_code)
+        self.assertEqual("plan is required", response.data)
+
     @mock.patch("redisapi.api.manager_by_instance")
     @mock.patch("redisapi.storage.MongoStorage")
     def test_remove_instance(self, mongo_mock, manager_mock):

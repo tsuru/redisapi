@@ -61,7 +61,10 @@ def unbind_unit(name):
 
 @app.route("/resources", methods=["POST"])
 def add_instance():
-    instance = manager_by_plan_name(request.form['plan']).add_instance(
+    plan = request.form.get('plan')
+    if not plan:
+        return "plan is required", 400
+    instance = manager_by_plan_name(plan).add_instance(
         request.form['name'])
     from storage import MongoStorage
     storage = MongoStorage()
