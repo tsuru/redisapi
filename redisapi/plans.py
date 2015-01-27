@@ -9,10 +9,10 @@ import os
 plans = [
     {"name": "development", "description": "Is a shared instance."},
     {"name": "basic",
-     "description": "Is a dedicated instance. With 1GB of memory."},
+     "description": "1 dedicated instance. With 1GB of memory."},
     {"name": "plus",
-     "description": "Is 2 dedicated instances. With 1GB of memory and \
-HA and failover support via redis-sentinel."},
+     "description": ("2 dedicated instances. With 1GB of memory, "
+                     "HA and failover support via redis-sentinel.")},
 ]
 
 
