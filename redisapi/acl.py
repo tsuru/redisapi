@@ -3,6 +3,8 @@
 # license that can be found in the LICENSE file.
 
 import os
+import sys
+import traceback
 
 from aclapiclient import aclapiclient, l4_options
 
@@ -23,8 +25,13 @@ class GloboACLAPIManager(object):
                                                                                endpoint["host"])
             dest = endpoint["host"] + "/32"
             l4_opts = l4_options.L4Opts(operator="eq", port=str(endpoint["port"]), target="dest")
-            self.client.add_tcp_permit_access(desc=desc, source=source,
-                                              dest=dest, l4_opts=l4_opts)
+            try:
+                self.client.add_tcp_permit_access(desc=desc, source=source,
+                                                  dest=dest, l4_opts=l4_opts)
+            except ValueError:
+                sys.stderr.write("Failed to add permit access:\n")
+                traceback.print_exc()
+                sys.stderr.flush()
         self.client.commit()
 
     def revoke_access(self, instance, unit_host):
@@ -35,8 +42,13 @@ class GloboACLAPIManager(object):
                                                                                endpoint["host"])
             dest = endpoint["host"] + "/32"
             l4_opts = l4_options.L4Opts(operator="eq", port=str(endpoint["port"]), target="dest")
-            self.client.remove_tcp_permit_access(desc=desc, source=source,
-                                                 dest=dest, l4_opts=l4_opts)
+            try:
+                self.client.remove_tcp_permit_access(desc=desc, source=source,
+                                                     dest=dest, l4_opts=l4_opts)
+            except ValueError:
+                sys.stderr.write("Failed to remove permit access:\n")
+                traceback.print_exc()
+                sys.stderr.flush()
         self.client.commit()
 
 
