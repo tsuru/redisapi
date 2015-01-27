@@ -58,5 +58,5 @@ class DumbAccessManager(object):
             permits.remove(unit_host)
             self.permits[instance.name] = permits
 
-access_managers = {"globo-acl-api": GloboACLAPIManager(),
-                   "default": DumbAccessManager()}
+access_managers = {"globo-acl-api": GloboACLAPIManager,
+                   "default": DumbAccessManager}

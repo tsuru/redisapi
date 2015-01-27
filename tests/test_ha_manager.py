@@ -203,6 +203,35 @@ class DockerHaManagerTest(unittest.TestCase):
         self.assertEqual(result['SENTINEL_HOSTS'], expected_sentinels)
         self.assertEqual(result['REDIS_MASTER'], instance.name)
 
+    def test_grant(self):
+        instance = Instance(
+            name="name",
+            plan='basic',
+            endpoints=[
+                {"host": "localhost", "port": "4242", "container_id": "12"},
+                {"host": "host.com", "port": "422", "container_id": "12"},
+            ],
+        )
+        self.manager.grant(instance, "10.0.0.1")
+        self.manager.grant(instance, "10.0.0.2")
+        access_mngr = self.manager.access_manager
+        self.assertEqual(["10.0.0.1", "10.0.0.2"], access_mngr.permits[instance.name])
+
+    def test_revoke(self):
+        instance = Instance(
+            name="name",
+            plan='basic',
+            endpoints=[
+                {"host": "localhost", "port": "4242", "container_id": "12"},
+                {"host": "host.com", "port": "422", "container_id": "12"},
+            ],
+        )
+        self.manager.grant(instance, "10.0.0.1")
+        self.manager.grant(instance, "10.0.0.2")
+        access_mngr = self.manager.access_manager
+        self.manager.revoke(instance, "10.0.0.1")
+        self.assertEqual(["10.0.0.2"], access_mngr.permits[instance.name])
+
     def test_port_range_start(self):
         self.assertEqual(49153, self.manager.port_range_start)
 

@@ -94,10 +94,12 @@ class DockerBase(object):
 
     @property
     def access_manager(self):
-        manager_name = os.environ.get("REDISAPI_ACCESS_MANAGER", "default")
-        if manager_name not in access_managers:
-            manager_name = "default"
-        return access_managers.get(manager_name)
+        if not hasattr(self, "_manager"):
+            manager_name = os.environ.get("REDISAPI_ACCESS_MANAGER", "default")
+            if manager_name not in access_managers:
+                manager_name = "default"
+            self._manager = access_managers.get(manager_name)()
+        return self._manager
 
     def is_ok(self):
         pass
