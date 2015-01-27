@@ -91,3 +91,23 @@ class GloboACLManagerTest(unittest.TestCase):
         self.assertEqual(l4_opts.operator, provided_opts.operator)
         self.assertEqual(l4_opts.port, provided_opts.port)
         self.assertEqual(l4_opts.target, provided_opts.target)
+
+
+class DumbManagerTest(unittest.TestCase):
+
+    def test_grant_access(self):
+        instance = storage.Instance(name="myredis", endpoints=None, plan="plus")
+        manager = acl.DumbAccessManager()
+        manager.grant_access(instance, "10.0.0.1")
+        manager.grant_access(instance, "10.0.0.2")
+        self.assertEqual(["10.0.0.1", "10.0.0.2"], manager.permits["myredis"])
+
+    def test_revoke_access(self):
+        instance = storage.Instance(name="myredis", endpoints=None, plan="plus")
+        manager = acl.DumbAccessManager()
+        manager.grant_access(instance, "10.0.0.1")
+        manager.grant_access(instance, "10.0.0.2")
+        manager.revoke_access(instance, "10.0.0.1")
+        self.assertEqual(["10.0.0.2"], manager.permits["myredis"])
+        manager.revoke_access(instance, "10.0.0.2")
+        self.assertEqual([], manager.permits["myredis"])

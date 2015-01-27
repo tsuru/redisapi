@@ -42,11 +42,22 @@ class GloboACLAPIManager(object):
 
 class DumbAccessManager(object):
 
+    def __init__(self):
+        self.permits = {}
+
     def grant_access(self, instance, unit_host):
-        pass
+        permits = self.permits.get(instance.name)
+        if not permits:
+            permits = []
+        permits.append(unit_host)
+        self.permits[instance.name] = permits
 
     def revoke_access(self, instance, unit_host):
-        pass
+        permits = self.permits.get(instance.name)
+        if permits:
+            permits.remove(unit_host)
+            self.permits[instance.name] = permits
 
-access_managers = {"globo-acl-api": GloboACLAPIManager,
-                   "default": DumbAccessManager}
+
+access_managers = {"globo-acl-api": GloboACLAPIManager(),
+                   "default": DumbAccessManager()}
