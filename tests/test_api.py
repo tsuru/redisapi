@@ -120,14 +120,27 @@ class RedisAPITestCase(unittest.TestCase):
         self.assertEqual("", response.data)
 
     def test_bind_unit(self):
-        response = self.app.post("/resources/myinstance/bind")
+        response = self.app.post("/resources/myinstance/bind",
+                                 data={"unit-host": "10.0.0.1"})
         self.assertEqual(201, response.status_code)
         self.assertEqual("", response.data)
 
+    def test_bind_unit_no_unit_host(self):
+        response = self.app.post("/resources/myinstance/bind")
+        self.assertEqual(400, response.status_code)
+        self.assertEqual("unit-host is required", response.data)
+
     def test_unbind_unit(self):
-        response = self.app.delete("/resources/myinstance/bind")
+        response = self.app.delete("/resources/myinstance/bind",
+                                   data={"unit-host": "10.0.0.1"},
+                                   headers={"Content-Type": "application/x-www-form-urlencoded"})
         self.assertEqual(200, response.status_code)
         self.assertEqual("", response.data)
+
+    def test_unbind_unit_no_unit_host(self):
+        response = self.app.delete("/resources/myinstance/bind")
+        self.assertEqual(400, response.status_code)
+        self.assertEqual("unit-host is required", response.data)
 
     @mock.patch("redisapi.api.manager_by_instance")
     def test_status(self, manager_mock):
