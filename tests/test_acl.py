@@ -33,9 +33,9 @@ class GloboACLManagerTest(unittest.TestCase):
     def test_grant_access(self):
         manager = acl.GloboACLAPIManager()
         manager.client = client = mock.Mock()
-        endpoints = [{"host": "10.0.0.1", "port": "4532"},
-                     {"host": "10.0.0.2", "port": "4536"},
-                     {"host": "10.0.0.3", "port": "3645"}]
+        endpoints = [{"host": "10.0.0.1", "port": 4532},
+                     {"host": "10.0.0.2", "port": 4536},
+                     {"host": "10.0.0.3", "port": 3645}]
         instance = storage.Instance(name="myredis", endpoints=endpoints,
                                     plan="plus")
         manager.grant_access(instance, "192.168.1.13")
@@ -59,9 +59,9 @@ class GloboACLManagerTest(unittest.TestCase):
     def test_revoke_access(self):
         manager = acl.GloboACLAPIManager()
         manager.client = client = mock.Mock()
-        endpoints = [{"host": "10.0.0.1", "port": "4532"},
-                     {"host": "10.0.0.2", "port": "4536"},
-                     {"host": "10.0.0.3", "port": "3645"}]
+        endpoints = [{"host": "10.0.0.1", "port": 4532},
+                     {"host": "10.0.0.2", "port": 4536},
+                     {"host": "10.0.0.3", "port": 3645}]
         instance = storage.Instance(name="myredis", endpoints=endpoints,
                                     plan="plus")
         manager.revoke_access(instance, "192.168.1.13")

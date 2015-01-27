@@ -22,7 +22,7 @@ class GloboACLAPIManager(object):
                                                                                unit_host,
                                                                                endpoint["host"])
             dest = endpoint["host"] + "/32"
-            l4_opts = l4_options.L4Opts(operator="eq", port=endpoint["port"], target="dest")
+            l4_opts = l4_options.L4Opts(operator="eq", port=str(endpoint["port"]), target="dest")
             self.client.add_tcp_permit_access(desc=desc, source=source,
                                               dest=dest, l4_opts=l4_opts)
         self.client.commit()
@@ -34,7 +34,7 @@ class GloboACLAPIManager(object):
                                                                                unit_host,
                                                                                endpoint["host"])
             dest = endpoint["host"] + "/32"
-            l4_opts = l4_options.L4Opts(operator="eq", port=endpoint["port"], target="dest")
+            l4_opts = l4_options.L4Opts(operator="eq", port=str(endpoint["port"]), target="dest")
             self.client.remove_tcp_permit_access(desc=desc, source=source,
                                                  dest=dest, l4_opts=l4_opts)
         self.client.commit()
