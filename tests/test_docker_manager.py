@@ -1,4 +1,4 @@
-# Copyright 2014 redisapi authors. All rights reserved.
+# Copyright 2015 redisapi authors. All rights reserved.
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
@@ -63,7 +63,7 @@ class DockerManagerTest(unittest.TestCase):
     def test_client_with_value(self):
         from redisapi.managers import DockerManager
         manager = DockerManager()
-        host = "http://myhost.com"
+        host = "http://myhost.com:1212"
         client = manager.client(host=host)
         self.assertEqual(client.base_url, host)
 
