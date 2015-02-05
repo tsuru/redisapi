@@ -67,17 +67,17 @@ class GloboACLManagerTest(unittest.TestCase):
         manager.revoke_access(instance, "192.168.1.13")
         calls = client.remove_tcp_permit_access.call_args_list
         self.assertEqual(3, len(calls))
-        desc_pat = 'redis-api instance "myredis" access from 192.168.1.13/32 to {}/32'
+        desc_pat = 'redis-api instance "myredis" access from 192.168.1.0/24 to {}/32'
         self.assert_permit_call(calls[0], desc=desc_pat.format("10.0.0.1"),
-                                source="192.168.1.13/32", dest="10.0.0.1/32",
+                                source="192.168.1.0/24", dest="10.0.0.1/32",
                                 l4_opts=l4_options.L4Opts(operator="eq", port="4532",
                                                           target="dest"))
         self.assert_permit_call(calls[1], desc=desc_pat.format("10.0.0.2"),
-                                source="192.168.1.13/32", dest="10.0.0.2/32",
+                                source="192.168.1.0/24", dest="10.0.0.2/32",
                                 l4_opts=l4_options.L4Opts(operator="eq", port="4536",
                                                           target="dest"))
         self.assert_permit_call(calls[2], desc=desc_pat.format("10.0.0.3"),
-                                source="192.168.1.13/32", dest="10.0.0.3/32",
+                                source="192.168.1.0/24", dest="10.0.0.3/32",
                                 l4_opts=l4_options.L4Opts(operator="eq", port="3645",
                                                           target="dest"))
         client.commit.assert_called_once()

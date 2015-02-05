@@ -34,11 +34,10 @@ class GloboACLAPIManager(object):
         self.client.commit()
 
     def revoke_access(self, instance, unit_host):
-        source = unit_host + "/32"
+        source = unit_host[:unit_host.rindex(".")+1] + "0/24"
         for endpoint in instance.endpoints:
-            desc = 'redis-api instance "{}" access from {}/32 to {}/32'.format(instance.name,
-                                                                               unit_host,
-                                                                               endpoint["host"])
+            desc = 'redis-api instance "{}" access from {} to {}/32'.format(instance.name, source,
+                                                                            endpoint["host"])
             dest = endpoint["host"] + "/32"
             l4_opts = l4_options.L4Opts(operator="eq", port=str(endpoint["port"]), target="dest")
             try:
