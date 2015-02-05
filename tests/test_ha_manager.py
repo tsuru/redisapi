@@ -45,8 +45,8 @@ class DockerHaManagerTest(unittest.TestCase):
 
     def test_client(self):
         manager = DockerHaManager()
-        client = manager.client(host="myhost:4243")
-        self.assertEqual("http://myhost:4243", client.base_url)
+        client = manager.client(host="myhost")
+        self.assertIn(client.base_url, "myhost")
 
     @mock.patch("redis.StrictRedis")
     def test_config_sentinels(self, redis_mock):
