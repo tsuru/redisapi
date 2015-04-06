@@ -66,6 +66,42 @@ class MongoStorageTest(unittest.TestCase):
         storage.db()
         mongo_mock.assert_called_with("0.0.0.0")
 
+    @mock.patch("pymongo.MongoClient")
+    def test_mongodb_dbaas_uri_environ(self, mongo_mock):
+        from redisapi.storage import MongoStorage
+        os.environ["DBAAS_MONGODB_ENDPOINT"] = "0.0.0.1"
+        self.addCleanup(self.remove_env, "DBAAS_MONGODB_ENDPOINT")
+        storage = MongoStorage()
+        storage.db()
+        mongo_mock.assert_called_with("0.0.0.1")
+
+    @mock.patch("pymongo.MongoClient")
+    def test_mongodb_dbaas_database_name_environ(self, mongo_mock):
+        from redisapi.storage import MongoStorage
+        os.environ["DBAAS_MONGODB_ENDPOINT"] = "0.0.0.1"
+        os.environ["DATABASE_NAME"] = "xxxx"
+        self.addCleanup(self.remove_env, "DBAAS_MONGODB_ENDPOINT")
+
+        def error():
+            from pymongo.errors import ConfigurationError
+            raise ConfigurationError()
+        mongo_mock.return_value.get_default_database.side_effect = error
+        storage = MongoStorage()
+        storage.db()
+        mongo_mock.assert_called_with("0.0.0.1")
+        mongo_mock.return_value.__getitem__.assert_called_with("xxxx")
+
+    @mock.patch("pymongo.MongoClient")
+    def test_mongodb_dbaas_database_name_from_url(self, mongo_mock):
+        from redisapi.storage import MongoStorage
+        os.environ["DBAAS_MONGODB_ENDPOINT"] = "0.0.0.1"
+        self.addCleanup(self.remove_env, "DBAAS_MONGODB_ENDPOINT")
+        storage = MongoStorage()
+        storage.db()
+        mongo_mock.assert_called_with("0.0.0.1")
+        default_db = mongo_mock.return_value.get_default_database.return_value
+        mongo_mock.return_value.__getitem__.assert_called_with(default_db)
+
     def test_add_instance(self):
         from redisapi.storage import MongoStorage
         storage = MongoStorage()

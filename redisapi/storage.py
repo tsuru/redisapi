@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
-import os
+from redisapi import mongodb_database
 
 
 class Instance(object):
@@ -23,12 +23,7 @@ class Instance(object):
 class MongoStorage(object):
 
     def db(self):
-        mongodb_uri = os.environ.get(
-            "MONGODB_URI", "mongodb://localhost:27017/")
-        database_name = os.environ.get("DATABASE_NAME", "redisapi")
-
-        from pymongo import MongoClient
-        return MongoClient(mongodb_uri)[database_name]
+        return mongodb_database()
 
     def add_instance(self, instance):
         self.db().instances.insert(instance.to_json())
