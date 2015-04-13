@@ -99,8 +99,7 @@ class MongoStorageTest(unittest.TestCase):
         storage = MongoStorage()
         storage.db()
         mongo_mock.assert_called_with("0.0.0.1")
-        default_db = mongo_mock.return_value.get_default_database.return_value
-        mongo_mock.return_value.__getitem__.assert_called_with(default_db)
+        mongo_mock.return_value.get_default_database.assert_called_with()
 
     def test_add_instance(self):
         from redisapi.storage import MongoStorage

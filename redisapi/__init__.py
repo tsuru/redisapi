@@ -10,7 +10,8 @@ def mongodb_database():
     from pymongo.errors import ConfigurationError
     client = MongoClient(mongodb_uri)
     try:
-        database_name = client.get_default_database()
+        database = client.get_default_database()
+        database_name = database.name
     except ConfigurationError:
         pass
     return client[database_name]
