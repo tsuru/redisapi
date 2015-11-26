@@ -5,5 +5,5 @@ gunicorn==0.17.2
 redis==2.10.3
 docker-py==0.3.0
 pymongo==2.8
-python-aclapiclient==0.1.6
+python-aclapiclient==0.1.7
 pyzabbix==0.6
