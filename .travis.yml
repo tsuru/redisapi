@@ -1,5 +1,7 @@
 language: python
 sudo: false
+before_script:
+  - pip install --upgrade pip distribute
 script:
   - make test
 services:
