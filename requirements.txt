@@ -1,9 +1,7 @@
-Flask==0.10.1
-Jinja2==2.7.3
-Werkzeug==0.9.6
-gunicorn==0.17.2
-redis==2.10.3
+Flask==0.11.1
+gunicorn==19.6.0
+redis==2.10.5
 docker-py==0.3.0
-pymongo==2.8
+pymongo==3.3.0
 python-aclapiclient==0.1.7
 pyzabbix==0.6
